@@ -9,25 +9,27 @@
   },
   "filesGlob": [
     "app/**/*.ts",
-    "typings/**/*.d.ts",
+    "typings/main/**/*.d.ts",
     "!node_modules/**"
   ],
   "exclude": [
     "node_modules",
     "client"
   ],
+  "atom": {
+    "rewriteTsconfig": true
+  },
   "files": [
     "app/client/hello.ts",
     "app/index.ts",
     "app/server/models/dummy.ts",
     "app/server/server.ts",
-    "typings/express-serve-static-core/express-serve-static-core.d.ts",
-    "typings/express/express.d.ts",
-    "typings/mime/mime.d.ts",
-    "typings/node/node.d.ts",
-    "typings/serve-static/serve-static.d.ts"
-  ],
-  "atom": {
-    "rewriteTsconfig": true
-  }
+    "typings/main/ambient/es6-shim/index.d.ts",
+    "typings/main/ambient/express-serve-static-core/index.d.ts",
+    "typings/main/ambient/express/index.d.ts",
+    "typings/main/ambient/jasmine/index.d.ts",
+    "typings/main/ambient/mime/index.d.ts",
+    "typings/main/ambient/node/index.d.ts",
+    "typings/main/ambient/serve-static/index.d.ts"
+  ]
 }

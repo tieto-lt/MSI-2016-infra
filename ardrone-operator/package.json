@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "typings install && typings install express-serve-static-core --ambient && typings install serve-static --ambient",
     "start": "tsc && concurrently \"tsc -w\" \"nodemon build/server/server.js\"",
-    "clean": "rm -r build"
+    "clean": "rm -rf build && rm -rf typings"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,6 @@
   "devDependencies": {
     "browser-sync": "^2.12.8",
     "concurrently": "^2.0.0",
-    "nodemon": "^1.9.2"
+    "nodemon": "^1.9.2",
   }
 }
