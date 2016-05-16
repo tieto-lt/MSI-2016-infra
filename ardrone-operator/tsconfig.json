@@ -1,0 +1,33 @@
+{
+  "version": "1.7.5",
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "outDir": "build"
+  },
+  "filesGlob": [
+    "app/**/*.ts",
+    "typings/**/*.d.ts",
+    "!node_modules/**"
+  ],
+  "exclude": [
+    "node_modules",
+    "client"
+  ],
+  "files": [
+    "app/client/hello.ts",
+    "app/index.ts",
+    "app/server/models/dummy.ts",
+    "app/server/server.ts",
+    "typings/express-serve-static-core/express-serve-static-core.d.ts",
+    "typings/express/express.d.ts",
+    "typings/mime/mime.d.ts",
+    "typings/node/node.d.ts",
+    "typings/serve-static/serve-static.d.ts"
+  ],
+  "atom": {
+    "rewriteTsconfig": true
+  }
+}

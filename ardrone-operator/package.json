@@ -1,0 +1,21 @@
+{
+  "name": "ardrone-operator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && concurrently \"tsc -w\" \"nodemon build/server/server.js\"",
+    "clean": "rm -r build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.12.8",
+    "concurrently": "^2.0.0",
+    "nodemon": "^1.9.2"
+  }
+}
