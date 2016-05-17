@@ -2,12 +2,14 @@ var WebSocket = require('ws');
 import * as express from 'express';
 import { Server } from 'http';
 import { OperatorState } from '../server/models/operator_state';
+import { MockApi } from './mock_api'
 
-const dummyOperatorId = "zerDummyId"
+
 
 class ControlMock {
   private wsServer: any;
   private httpServer: Server;
+  private mockApi = new MockApi()
 
   constructor(port: number, httpPort: number) {
     //WS
@@ -19,7 +21,7 @@ class ControlMock {
     let expressApp = express();
 
     expressApp.post('/rest/operators', (req, res) => {
-      res.json(new OperatorState("Initialized", dummyOperatorId))
+      res.json(this.mockApi.initializeOperator())
     });
 
     const httpServer = expressApp.listen(httpPort, "localhost", () => {
