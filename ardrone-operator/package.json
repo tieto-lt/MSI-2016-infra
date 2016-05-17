@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "express-ws": "^2.0.0-rc.1"
   },
   "devDependencies": {
     "browser-sync": "^2.12.8",
