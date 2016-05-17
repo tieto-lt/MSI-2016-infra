@@ -24,15 +24,20 @@
     "app/custom_typings/ar_drone/index.d.ts",
     "app/index.ts",
     "app/mock/mock_server.ts",
+    "app/server/constants.ts",
+    "app/server/models/drone_state.ts",
     "app/server/models/dummy.ts",
+    "app/server/models/operator_state.ts",
     "app/server/operator.ts",
     "app/server/server.ts",
     "typings/main/ambient/es6-shim/index.d.ts",
     "typings/main/ambient/express-serve-static-core/index.d.ts",
     "typings/main/ambient/express/index.d.ts",
+    "typings/main/ambient/form-data/index.d.ts",
     "typings/main/ambient/jasmine/index.d.ts",
     "typings/main/ambient/mime/index.d.ts",
     "typings/main/ambient/node/index.d.ts",
-    "typings/main/ambient/serve-static/index.d.ts"
+    "typings/main/ambient/serve-static/index.d.ts",
+    "typings/main/definitions/request/index.d.ts"
   ]
 }

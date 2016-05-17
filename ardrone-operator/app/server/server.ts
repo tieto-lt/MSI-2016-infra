@@ -11,12 +11,12 @@ console.log('dm', dm);
 app.use(express.static('app/client')); //Htmls
 app.use(express.static('build/client')); //Javascripts
 
-new Operator().connect();
-app.get('/api/', (req, res) => res.send('Hi'));
+let operator = new Operator();
 
-app.get('/api/products', (req, res) => res.send('Got a request for products'));
-
-app.get('/api/reviews', (req, res) => res.send('Got a request for reviews'));
+app.get('/api/connect/drone', (req, res) => res.json(operator.droneConnect()));
+app.get('/api/connect/control', (req, res, next) => {
+  operator.controlConnect((body) => res.json(body))
+});
 
 const server = app.listen(8000, "localhost", () => {
 
