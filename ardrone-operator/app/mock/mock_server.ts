@@ -11,10 +11,10 @@ class Operator {
 }
 
 class ControlMock {
-  private wsServer: any;
-  private httpServer: Server;
-  private mockApi = new MockApi();
-  private connections: Map<string, Operator> = new Map<string, Operator>();
+  private wsServer: any
+  private httpServer: Server
+  private mockApi = new MockApi()
+  private connections = new Map<string, Operator>();
 
   constructor(httpPort: number) {
     //HTTP
@@ -30,18 +30,19 @@ class ControlMock {
     });
     this.httpServer = httpServer;
 
-
     //WS
-    this.wsServer = new WebSocket.Server({server: this.httpServer, path: '/ws/api'});
-    this.wsServer.on('connection', this.handleConnecion);
+    this.wsServer = new WebSocket.Server({server: this.httpServer});
+    this.wsServer.on('connection', this.handleConnecion(this));
     console.log(`Mock listening ws on ${httpPort}`);
   }
 
-  handleConnecion(ws) {
-    console.log("New connection");
-
-    ws.on('message', (message) => console.log(message));
-    ws.send("Hi!");
+  private handleConnecion(self) {
+    return (client) => {
+      console.log("Connected :", client.upgradeReq.url)
+      let urlParts: string[] = client.upgradeReq.url.split("/")
+      let operatorId: string = urlParts[urlParts.length - 1]
+      client.on('message', (message) => self.mockApi.onDroneStateUpdate(operatorId, message));
+    }
   }
 }
 

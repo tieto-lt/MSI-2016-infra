@@ -13,13 +13,12 @@ app.use(express.static('build/client')); //Javascripts
 
 let operator = new Operator();
 
-app.get('/api/connect/drone', (req, res) => res.json(operator.droneConnect()));
 app.get('/api/connect/control', (req, res, next) => {
   operator.controlConnect((body) => res.json(body))
 });
 
 const server = app.listen(8000, "localhost", () => {
 
-   const {address, port} = server.address();
-   console.log('Listening on http://localhost:' + port);
+ const {address, port} = server.address();
+ console.log('Listening on http://localhost:' + port);
 });
