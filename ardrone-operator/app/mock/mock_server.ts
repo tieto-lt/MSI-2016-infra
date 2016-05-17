@@ -5,10 +5,11 @@ import { OperatorState } from '../server/models/operator_state';
 import { MockApi } from './mock_api'
 
 class Operator {
-  clientId: string;
-  connection: any;
-  lastPing: Date;
+
+  constructor(public connection: any, public lastPing: Date) {}
 }
+
+const PING_INTERVAL = 5000;
 
 class ControlMock {
   private wsServer: any
@@ -32,17 +33,36 @@ class ControlMock {
 
     //WS
     this.wsServer = new WebSocket.Server({server: this.httpServer});
-    this.wsServer.on('connection', this.handleConnecion(this));
+    this.wsServer.on('connection', this.handleConnecion());
     console.log(`Mock listening ws on ${httpPort}`);
   }
 
-  private handleConnecion(self) {
+  private handleConnecion() {
     return (client) => {
       console.log("Connected :", client.upgradeReq.url)
-      let urlParts: string[] = client.upgradeReq.url.split("/")
-      let operatorId: string = urlParts[urlParts.length - 1]
-      client.on('message', (message) => self.mockApi.onDroneStateUpdate(operatorId, message));
+      let operatorId = this.extractOperatorId(client);
+      client.on('message', (message) => this.mockApi.onDroneStateUpdate(operatorId, message));
+      this.connections.set(operatorId, new Operator(client, new Date()));
+      this.handleHeartbeat(client);
     }
+  }
+
+  private handleHeartbeat(ws) {
+    ws.addEventListener('pong', (data, flags) => {
+      let clientId = this.extractOperatorId(ws);
+      let operator = this.connections.get(clientId);
+      console.log(`${operator.lastPing}`)
+      if (operator) {
+          operator.lastPing = new Date();
+      }
+    });
+
+    setInterval(() => ws.ping("Are you alive?"), PING_INTERVAL);
+  }
+
+  private extractOperatorId(ws): string {
+    let urlParts: string[] = ws.upgradeReq.url.split("/")
+    return urlParts[urlParts.length - 1]
   }
 }
 
