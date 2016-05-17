@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "ar-drone": "0.3.3"
   },
   "devDependencies": {
     "browser-sync": "^2.12.8",
