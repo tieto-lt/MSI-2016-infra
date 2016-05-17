@@ -17,6 +17,6 @@
   "devDependencies": {
     "browser-sync": "^2.12.8",
     "concurrently": "^2.0.0",
-    "nodemon": "^1.9.2",
+    "nodemon": "^1.9.2"
   }
 }
