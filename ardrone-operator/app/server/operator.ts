@@ -18,7 +18,7 @@ export class Operator {
     request.post(`${Constants.httpOperators()}`, (error, response, body) => {
       let state: OperatorState = JSON.parse(body)
       this.statews = new WebSocket(`${Constants.wsStatePath(state.id)}`);
-      this.client.on('navdata', this.onNavData);
+      this.client.on('navdata', this.onNavData());
       callback(state)
     });
   }
@@ -27,13 +27,15 @@ export class Operator {
     this.statews && this.statews.close()
   }
 
-  private onNavData(data: ds.DroneState) {
-    if (this.isWsOpen(this.statews)) {
-      this.statews.send(data);
+  private onNavData() {
+    return (data: ds.DroneState) => {
+      if (this.isWsOpen(this.statews)) {
+        this.statews.send(JSON.stringify(data));
+      }
     }
   }
 
   private isWsOpen(ws): boolean {
-    return ws && ws.readyState === 'OPEN';
+    return ws && ws.readyState === WebSocket.OPEN;
   }
 }

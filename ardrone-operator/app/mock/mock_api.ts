@@ -11,6 +11,6 @@ export class MockApi implements ControlApi {
   }
 
   onDroneStateUpdate(operatorId: string, state: ds.DroneState) {
-    console.log(state, "Updated state at ", new Date())
+    console.log(state, "Updated state at ", operatorId, new Date())
   }
 }
