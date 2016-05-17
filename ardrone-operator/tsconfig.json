@@ -23,6 +23,7 @@
     "app/client/hello.ts",
     "app/custom_typings/ar_drone/index.d.ts",
     "app/index.ts",
+    "app/mock/mock_server.ts",
     "app/server/models/dummy.ts",
     "app/server/operator.ts",
     "app/server/server.ts",

@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "typings install && typings install express-serve-static-core --ambient && typings install serve-static --ambient",
     "start": "tsc && concurrently \"tsc -w\" \"nodemon build/server/server.js\"",
+    "mock": "tsc && concurrently \"tsc -w\" \"nodemon build/mock/mock_server.js\"",
     "clean": "rm -rf build && rm -rf typings"
   },
   "keywords": [],
@@ -14,7 +15,7 @@
   "dependencies": {
     "ar-drone": "0.3.3",
     "express": "^4.13.4",
-    "nodejs-websocket": "^1.6.0"
+    "ws": "^1.1.0"
   },
   "devDependencies": {
     "browser-sync": "^2.12.8",
