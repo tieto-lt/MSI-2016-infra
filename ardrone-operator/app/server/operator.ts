@@ -1,80 +1,45 @@
-import arDrone = require('ar-drone')
-import { Constants } from './constants'
-import * as ds from './models/drone_state'
+import { Control } from './control'
+import { Drone } from './drone'
 import { OperatorState } from './models/operator_state';
 import { Command, CommandType, Move } from './models/commands';
-import * as request from 'request'
-import { PaVEParser } from './PaVEParser';
-var WebSocket = require('ws')
-var dronestream = require('dronestream')
+import * as ds from './models/drone_state'
 
 export class Operator {
 
-  private client: any
-  private controlWs: any;
-  private videows: any
-  private currentState: OperatorState
-  private videoStream: any
-  private videoParser: PaVEParser
+  private control: Control
+  private drone: Drone
+  public isUp: boolean = false;
 
-  controlConnect(callback: (state: OperatorState) => any) {
-    this.disconnectControl();
-    this.client = arDrone.createClient();
-    this.videoStream = this.client.getVideoStream();
+  constructor() {
+    this.control = new Control(cmd => this.onCommandReceived(cmd))
+    this.drone = new Drone(
+      state => this.onDroneStateUpdate(state),
+      frame => this.onDroneVideoFrame(frame))
+  }
 
-    request.post(`${Constants.httpOperators()}`, (error, response, body) => {
-      let state: OperatorState = JSON.parse(body)
-      this.controlWs = new WebSocket(`${Constants.wsControlPath(state.id)}`);
-      this.controlWs.on('message', this.onCommandReceive())
-      this.client.on('navdata', this.onNavData());
-      this.videows = new WebSocket(`${Constants.wsVideoPath(state.id)}`)
-      this.videoParser = new PaVEParser()
-      this.videoStream.on('data', this.onVideoData())
-
+  connect(callback: (state: OperatorState) => any) {
+    this.drone.connect();
+    this.control.connect(state => {
+      this.isUp = true
       callback(state)
     });
   }
 
-  disconnectControl() {
-    this.controlWs && this.controlWs.close()
+  close() {
+    this.drone.close();
+    this.control.close();
+    this.isUp = false;
   }
 
-  private onVideoData() {
-    return (data: any) => {
-      if (this.isWsOpen(this.videows)) {
-        this.videoParser.write(data, (parsedData) => {
-          this.videows.send(parsedData, { binary: true });
-        });
-      }
-    }
+  private onCommandReceived(command: Command) {
+    this.drone.sendCommand(command)
   }
 
-  private onNavData() {
-    return (data: any) => {
-      if (this.isWsOpen(this.controlWs)) {
-        this.controlWs.send(JSON.stringify(data));
-      }
-    }
+  private onDroneStateUpdate(state: ds.NavData) {
+    this.control.sendState(state)
   }
 
-  private isWsOpen(ws): boolean {
-    return ws && ws.readyState === WebSocket.OPEN;
-  }
-
-  private onCommandReceive() {
-    return (commandStr: string, flags: any) => {
-      let command: Command = JSON.parse(commandStr);
-      switch (command.commandType) {
-        case "takeoff":
-          this.client.takeoff();
-          // console.log("takeoff");
-          break;
-        case "land":
-          this.client.land();
-          // console.log("land");
-          break;
-        // TODO: implement
-      }
-    }
+  private onDroneVideoFrame(frame: any) {
+    this.control.sendVideoChunk(frame)
   }
 }

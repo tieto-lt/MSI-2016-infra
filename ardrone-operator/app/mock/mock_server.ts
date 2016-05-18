@@ -32,6 +32,7 @@ class ControlMock {
        let operatorId = req.params.operatorId;
        let operation = req.params.operation;
        let connection = this.operatorsManager.getConnection(operatorId);
+       console.log('rest send')
        this.mockApi.sendCommand(operation, req.query, connection);
        res.sendStatus(200); // FIXME
     })
@@ -53,8 +54,8 @@ class ControlMock {
       let reqUrl = client.upgradeReq.url;
       console.log("Connected :", reqUrl)
       let operatorId = this.extractOperatorId(client);
-      this.operatorsManager.registerConnection(this.extractOperatorId(client), client);
       if (WS_API_PATTERN.test(reqUrl)) {
+        this.operatorsManager.registerConnection(this.extractOperatorId(client), client);
         client.on('message', (message) => this.mockApi.onDroneStateUpdate(operatorId, JSON.parse(message)));
       } else if (WS_VIDEO_PATTERN.test(reqUrl)) {
         client.on('message', (message) => {

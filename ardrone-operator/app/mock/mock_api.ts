@@ -12,17 +12,21 @@ export class MockApi implements ControlApi {
   }
 
   onDroneStateUpdate(operatorId: string, state: ds.NavData) {
-    console.log(state.droneState.lowBattery, "Updated state at ", operatorId, new Date())
+    //console.log(state.droneState.lowBattery, "Updated state at ", operatorId, new Date())
   }
 
   onVideoFrame(operatorId: string, videoData: any) {
-    console.log("Getting video", operatorId, new Date())
+    //console.log("Getting video", operatorId, new Date())
   }
 
   sendCommand(command: CommandType, params: any, wsConnection: any) {
     if (!wsConnection) return;
+    console.log('api send')
+
     let commandJson = JSON.stringify(this.createCommand(command, params));
+    console.log(commandJson)
     wsConnection.send(commandJson);
+    console.log('Send to ', wsConnection.upgradeReq.url)
   }
 
   private createCommand(commandType: CommandType, params: any): Command {

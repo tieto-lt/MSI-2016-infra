@@ -1,20 +1,15 @@
 import * as express from 'express';
-import { DummyModel } from './models/dummy';
 import { Operator } from './operator'
 
-const app = express(); // 1
-
-let dm = new DummyModel()
-dm.aField = "dummy value"
-console.log('dm', dm);
+const app = express();
 
 app.use(express.static('app/client')); //Htmls
 app.use(express.static('build/client')); //Javascripts
 
 let operator = new Operator();
 
-app.get('/api/connect/control', (req, res, next) => {
-  operator.controlConnect((body) => res.json(body))
+app.get('/api/connect', (req, res, next) => {
+  operator.connect((body) => res.json(body))
 });
 
 const server = app.listen(8000, "localhost", () => {
