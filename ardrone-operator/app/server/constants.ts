@@ -6,7 +6,7 @@ export class Constants {
     return `${Constants.HTTP_CONTROL_URL}/rest/operators`
   }
 
-  public static wsStatePath(operatorId: string): string {
+  public static wsControlPath(operatorId: string): string {
     return `${Constants.WS_CONTROL_URL}/ws/api/${operatorId}`
   }
 }

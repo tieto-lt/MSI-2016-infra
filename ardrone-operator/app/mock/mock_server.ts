@@ -2,28 +2,34 @@ var WebSocket = require('ws');
 import * as express from 'express';
 import { Server } from 'http';
 import { OperatorState } from '../server/models/operator_state';
-import { MockApi } from './mock_api'
+import { Command, Move, CommandType } from '../server/models/commands';
+import { MockApi } from './mock_api';
+import {OperatorsManager} from './operators_manager';
 
-class Operator {
 
-  constructor(public connection: any, public lastPing: Date) {}
-}
-
-const PING_INTERVAL = 5000;
 
 class ControlMock {
   private wsServer: any
   private httpServer: Server
   private mockApi = new MockApi()
-  private connections = new Map<string, Operator>();
 
-  constructor(httpPort: number) {
+  constructor(httpPort: number, private operatorsManager: OperatorsManager) {
     //HTTP
     let expressApp = express();
 
     expressApp.post('/rest/operators', (req, res) => {
-      res.json(this.mockApi.initializeOperator());
+      let operatorState = this.mockApi.initializeOperator()
+      operatorsManager.registerOperator(operatorState.id)
+      res.json(operatorState);
     });
+
+    expressApp.post('/rest/operators/:operatorId/:operation', (req, res) => {
+       let operatorId = req.params.operatorId;
+       let operation = req.params.operation;
+       let connection = this.operatorsManager.getConnection(operatorId);
+       this.mockApi.sendCommand(operation, req.query, connection);
+       res.sendStatus(200); // FIXME
+    })
 
     const httpServer = expressApp.listen(httpPort, "localhost", () => {
        const {address, port} = httpServer.address();
@@ -41,23 +47,9 @@ class ControlMock {
     return (client) => {
       console.log("Connected :", client.upgradeReq.url)
       let operatorId = this.extractOperatorId(client);
+      this.operatorsManager.registerConnection(this.extractOperatorId(client), client);
       client.on('message', (message) => this.mockApi.onDroneStateUpdate(operatorId, message));
-      this.connections.set(operatorId, new Operator(client, new Date()));
-      this.handleHeartbeat(client);
     }
-  }
-
-  private handleHeartbeat(ws) {
-    ws.addEventListener('pong', (data, flags) => {
-      let clientId = this.extractOperatorId(ws);
-      let operator = this.connections.get(clientId);
-      console.log(`${operator.lastPing}`)
-      if (operator) {
-          operator.lastPing = new Date();
-      }
-    });
-
-    setInterval(() => ws.ping("Are you alive?"), PING_INTERVAL);
   }
 
   private extractOperatorId(ws): string {
@@ -66,4 +58,4 @@ class ControlMock {
   }
 }
 
-export = new ControlMock(9000);
+export = new ControlMock(9000, new OperatorsManager());
