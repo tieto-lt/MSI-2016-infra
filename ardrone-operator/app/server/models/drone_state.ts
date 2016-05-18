@@ -1,4 +1,9 @@
 
+export class NavData {
+  public droneState: DroneState
+  public demo: DroneDemoState
+}
+
 export class DroneState {
   public flying: number
   public videoEnabled: number

@@ -4,9 +4,11 @@ import { Server } from 'http';
 import { OperatorState } from '../server/models/operator_state';
 import { Command, Move, CommandType } from '../server/models/commands';
 import { MockApi } from './mock_api';
-import {OperatorsManager} from './operators_manager';
+import { OperatorsManager } from './operators_manager'
 
-
+const PING_INTERVAL = 5000
+const WS_API_PATTERN = new RegExp("/ws/api/.*$")
+const WS_VIDEO_PATTERN = new RegExp("/ws/video/.*$")
 
 class ControlMock {
   private wsServer: any
@@ -22,6 +24,9 @@ class ControlMock {
       operatorsManager.registerOperator(operatorState.id)
       res.json(operatorState);
     });
+    expressApp.use(express.static('app/mock')); //Htmls
+    expressApp.use(express.static('build/mock')); //Javascripts
+    expressApp.use('/node_modules', express.static('node_modules'))
 
     expressApp.post('/rest/operators/:operatorId/:operation', (req, res) => {
        let operatorId = req.params.operatorId;
@@ -45,10 +50,20 @@ class ControlMock {
 
   private handleConnecion() {
     return (client) => {
-      console.log("Connected :", client.upgradeReq.url)
+      let reqUrl = client.upgradeReq.url;
+      console.log("Connected :", reqUrl)
       let operatorId = this.extractOperatorId(client);
       this.operatorsManager.registerConnection(this.extractOperatorId(client), client);
-      client.on('message', (message) => this.mockApi.onDroneStateUpdate(operatorId, message));
+      if (WS_API_PATTERN.test(reqUrl)) {
+        client.on('message', (message) => this.mockApi.onDroneStateUpdate(operatorId, JSON.parse(message)));
+      } else if (WS_VIDEO_PATTERN.test(reqUrl)) {
+        client.on('message', (message) => {
+          this.mockApi.onVideoFrame(operatorId, message)
+          this.wsServer.clients
+            .filter(c => c.upgradeReq.url.endsWith('/ws/client/video/' + operatorId))
+            .forEach(videoClient => videoClient.send(message, {binary: true}));
+        });
+      }
     }
   }
 

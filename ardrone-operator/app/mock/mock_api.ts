@@ -11,8 +11,12 @@ export class MockApi implements ControlApi {
     return new OperatorState("Initialized", dummyOperatorId)
   }
 
-  onDroneStateUpdate(operatorId: string, state: ds.DroneState) {
-    console.log(state, "Updated state at ", operatorId, new Date())
+  onDroneStateUpdate(operatorId: string, state: ds.NavData) {
+    console.log(state.droneState.lowBattery, "Updated state at ", operatorId, new Date())
+  }
+
+  onVideoFrame(operatorId: string, videoData: any) {
+    console.log("Getting video", operatorId, new Date())
   }
 
   sendCommand(command: CommandType, params: any, wsConnection: any) {

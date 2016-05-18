@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>AR Drone Operator Application</title>
+    <script src="dronestream-client/vendor/broadway/sylvester.js"></script>
+    <script src="dronestream-client/vendor/broadway/glUtils.js"></script>
+    <script src="dronestream-client/vendor/broadway/util.js"></script>
+    <script src="dronestream-client/vendor/broadway/avc-codec.js"></script>
+    <script src="dronestream-client/vendor/broadway/avc.js"></script>
+    <script src="dronestream-client/vendor/broadway/canvas.js"></script>
+    <script src="dronestream-client/nodecopter-stream.js"></script>
+    <!-- <script src="node_modules/dronestream/dist/nodecopter-client.js"></script>-->
+</head>
+<body>
+  <p>Hi</p>
+  <div id="droneStream"></div>
+
+  <script>
+     // video canvas will auto-size to the DOM-node, or default to 640*360 if no size is set.
+     new NodecopterStream(document.getElementById("droneStream"), { path: '/ws/client/video/zerDummyId'});
+  </script>
+</body>
+</html>

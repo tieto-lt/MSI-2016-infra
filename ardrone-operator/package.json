@@ -16,7 +16,11 @@
     "ar-drone": "0.3.3",
     "express": "^4.13.4",
     "ws": "^1.1.0",
-    "request": "2.72.0"
+    "request": "2.72.0",
+    "dronestream": "1.1.1",
+    "buffy": "0.0.5",
+
+    "broadway": "0.1.0"
   },
   "devDependencies": {
     "browser-sync": "^2.12.8",

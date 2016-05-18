@@ -35,6 +35,7 @@
     "app/server/models/requests.ts",
     "app/server/models/responses.ts",
     "app/server/operator.ts",
+    "app/server/PaVEParser.ts",
     "app/server/server.ts",
     "typings/main/ambient/es6-shim/index.d.ts",
     "typings/main/ambient/express-serve-static-core/index.d.ts",

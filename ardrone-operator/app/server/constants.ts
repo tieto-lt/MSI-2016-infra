@@ -9,4 +9,8 @@ export class Constants {
   public static wsControlPath(operatorId: string): string {
     return `${Constants.WS_CONTROL_URL}/ws/api/${operatorId}`
   }
+
+  public static wsVideoPath(operatorId: string): string {
+    return `${Constants.WS_CONTROL_URL}/ws/video/${operatorId}`;
+  }
 }
