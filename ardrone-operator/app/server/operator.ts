@@ -2,7 +2,7 @@ import arDrone = require('ar-drone')
 import { Constants } from './constants'
 import * as ds from './models/drone_state'
 import { OperatorState } from './models/operator_state';
-import { CommandJSON, Command, CommandType, Move } from './models/commands';
+import { Command, CommandType, Move } from './models/commands';
 import * as request from 'request'
 import { PaVEParser } from './PaVEParser';
 var WebSocket = require('ws')

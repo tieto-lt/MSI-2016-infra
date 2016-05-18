@@ -32,8 +32,6 @@
     "app/server/models/drone_state.ts",
     "app/server/models/dummy.ts",
     "app/server/models/operator_state.ts",
-    "app/server/models/requests.ts",
-    "app/server/models/responses.ts",
     "app/server/operator.ts",
     "app/server/PaVEParser.ts",
     "app/server/server.ts",

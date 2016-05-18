@@ -6,7 +6,7 @@ import { Command, Move, CommandType } from '../server/models/commands';
 import { MockApi } from './mock_api';
 import { OperatorsManager } from './operators_manager'
 
-const PING_INTERVAL = 5000
+
 const WS_API_PATTERN = new RegExp("/ws/api/.*$")
 const WS_VIDEO_PATTERN = new RegExp("/ws/video/.*$")
 
@@ -15,7 +15,7 @@ class ControlMock {
   private httpServer: Server
   private mockApi = new MockApi()
 
-  constructor(httpPort: number, private operatorsManager: OperatorsManager) {
+  constructor(private operatorsManager: OperatorsManager, httpPort: number) {
     //HTTP
     let expressApp = express();
 
@@ -73,4 +73,4 @@ class ControlMock {
   }
 }
 
-export = new ControlMock(9000, new OperatorsManager());
+export = new ControlMock(new OperatorsManager(), 9000);
