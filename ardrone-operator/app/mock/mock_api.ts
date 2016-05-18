@@ -21,12 +21,8 @@ export class MockApi implements ControlApi {
 
   sendCommand(command: CommandType, params: any, wsConnection: any) {
     if (!wsConnection) return;
-    console.log('api send')
-
     let commandJson = JSON.stringify(this.createCommand(command, params));
-    console.log(commandJson)
     wsConnection.send(commandJson);
-    console.log('Send to ', wsConnection.upgradeReq.url)
   }
 
   private createCommand(commandType: CommandType, params: any): Command {

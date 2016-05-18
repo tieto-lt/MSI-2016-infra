@@ -1,6 +1,6 @@
 import arDrone = require('ar-drone')
 import * as ds from './models/drone_state'
-import { CommandJSON, Command, CommandType, Move } from './models/commands';
+import { Command, CommandType, Move } from './models/commands';
 import { PaVEParser } from './PaVEParser';
 
 export class Drone {
@@ -27,7 +27,6 @@ export class Drone {
   }
 
   sendCommand(command: Command) {
-    console.log('send', command)
     switch (command.commandType) {
       case "takeoff":
         this.client.takeoff();

@@ -1,7 +1,7 @@
 import { Constants } from './constants'
 import * as ds from './models/drone_state'
 import { OperatorState } from './models/operator_state';
-import { CommandJSON, Command, CommandType, Move } from './models/commands';
+import { Command, CommandType, Move } from './models/commands';
 import * as request from 'request'
 var WebSocket = require('ws')
 
@@ -47,9 +47,7 @@ export class Control {
   }
 
   private onCommandReceive() {
-    console.log('init')
     return (commandStr: string, flags: any) => {
-      console.log('control command')
       let command: Command = JSON.parse(commandStr);
       this.commandReceiveCallback(command)
     }
