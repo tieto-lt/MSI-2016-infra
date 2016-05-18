@@ -8,10 +8,16 @@
     <script src="dronestream-client/vendor/broadway/avc.js"></script>
     <script src="dronestream-client/vendor/broadway/canvas.js"></script>
     <script src="dronestream-client/nodecopter-stream.js"></script>
+
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="client/client.js"></script>
     <!-- <script src="node_modules/dronestream/dist/nodecopter-client.js"></script>-->
 </head>
 <body>
-  <p>Hi</p>
+  <div>
+    <button id="take-off-command">Take off</button>
+    <button id="land-command">Land</button>
+  </div>
   <div id="droneStream"></div>
 
   <script>

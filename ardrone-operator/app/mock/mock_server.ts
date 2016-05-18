@@ -34,8 +34,8 @@ class ControlMock {
        let connection = this.operatorsManager.getConnection(operatorId);
        console.log('rest send')
        this.mockApi.sendCommand(operation, req.query, connection);
-       res.sendStatus(200); // FIXME
-    })
+       res.sendStatus(200);
+    });
 
     const httpServer = expressApp.listen(httpPort, "localhost", () => {
        const {address, port} = httpServer.address();
