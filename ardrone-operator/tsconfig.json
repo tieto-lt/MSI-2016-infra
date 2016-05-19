@@ -20,6 +20,7 @@
     "rewriteTsconfig": true
   },
   "files": [
+    "app/client/client.ts",
     "app/custom_typings/ar_drone/index.d.ts",
     "app/index.ts",
     "app/mock/api.ts",

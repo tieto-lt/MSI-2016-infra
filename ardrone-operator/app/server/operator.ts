@@ -19,8 +19,12 @@ export class Operator {
       frame => this.onDroneVideoFrame(frame))
   }
 
-  connectExternalControl(callback: (state: OperatorState) => any) {
+  droneConnect() {
+    //second connect fucks up video stream TODO
     this.drone.connect();
+  }
+
+  connectExternalControl(callback: (state: OperatorState) => any) {
     ControlAuthenticator.connect((state, controlWs, videoWs) => {
       this.externalControl.initControl(controlWs);
       this.externalControl.initVideo(videoWs)
