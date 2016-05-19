@@ -29,6 +29,7 @@ export class MockApi implements ControlApi {
     switch(commandType) {
       case "takeoff":
       case "land":
+      case "stop":
         return new Command(commandType);
       case "up":
       case "down":

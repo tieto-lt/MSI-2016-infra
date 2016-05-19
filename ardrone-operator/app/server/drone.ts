@@ -27,7 +27,11 @@ export class Drone {
   }
 
   sendCommand(command: Command) {
+    console.log(command);
     switch (command.commandType) {
+      case "stop":
+        this.client.stop();
+        break;
       case "takeoff":
         this.client.takeoff();
         // console.log("takeoff");
@@ -36,8 +40,36 @@ export class Drone {
         this.client.land();
         // console.log("land");
         break;
-      // TODO: implement
+      case "up":
+        this.client.up(this.getSpeed(command));
+        break;
+      case "down":
+        this.client.down(this.getSpeed(command));
+        break;
+      case "front":
+        this.client.front(this.getSpeed(command));
+        break;
+      case "back":
+        this.client.back(this.getSpeed(command));
+        break;
+      case "left":
+        this.client.left(this.getSpeed(command));
+        break;
+      case "right":
+        this.client.right(this.getSpeed(command));
+        break;
+      case "clockwise":
+        this.client.clockwise(this.getSpeed(command));
+        break;
+      case "counterClockwise":
+        this.client.counterClockwise(this.getSpeed(command));
+        break;
     }
+  }
+
+  private getSpeed(command: Command): number {
+    let moveCommand = <Move>command;
+    return moveCommand.speed;
   }
 
   private onVideoData() {

@@ -1,7 +1,7 @@
 /**
  *  Command models
  */
-export type CommandType = "takeoff" | "land" | "up" | "down" | "front" | "back" |
+export type CommandType = "takeoff" | "land" | "stop" | "up" | "down" | "front" | "back" |
     "left" | "right" | "clockwise" | "counterClockwise"
 
 export class Command {

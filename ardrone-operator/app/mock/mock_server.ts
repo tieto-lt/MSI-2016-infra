@@ -33,6 +33,7 @@ class ControlMock {
        let operation = req.params.operation;
        let connection = this.operatorsManager.getConnection(operatorId);
        this.mockApi.sendCommand(operation, req.query, connection);
+
        res.sendStatus(200);
     });
 
