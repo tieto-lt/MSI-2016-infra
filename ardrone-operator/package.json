@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "ar-drone": "0.3.3",
-    "broadway": "0.1.0",
+    "dronestream": "1.1.1",
     "buffy": "0.0.5",
     "express": "^4.13.4",
     "dronestream": "1.1.1",

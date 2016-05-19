@@ -1,4 +1,4 @@
-import { Control } from './control'
+import { Control, ControlAuthenticator } from './control'
 import { Drone } from './drone'
 import { OperatorState } from './models/operator_state';
 import { Command, CommandType, Move } from './models/commands';
@@ -6,29 +6,40 @@ import * as ds from './models/drone_state'
 
 export class Operator {
 
-  private control: Control
+  private externalControl: Control
+  private internalControl: Control
   private drone: Drone
-  public isUp: boolean = false;
 
   constructor() {
-    this.control = new Control(cmd => this.onCommandReceived(cmd))
+    this.externalControl = new Control(cmd => this.onCommandReceived(cmd))
+    this.internalControl = new Control(cmd => this.onCommandReceived(cmd))
+
     this.drone = new Drone(
       state => this.onDroneStateUpdate(state),
       frame => this.onDroneVideoFrame(frame))
   }
 
-  connect(callback: (state: OperatorState) => any) {
+  connectExternalControl(callback: (state: OperatorState) => any) {
     this.drone.connect();
-    this.control.connect(state => {
-      this.isUp = true
+    ControlAuthenticator.connect((state, controlWs, videoWs) => {
+      this.externalControl.initControl(controlWs);
+      this.externalControl.initVideo(videoWs)
       callback(state)
-    });
+    })
+  }
+
+  connectInternalControlSocket(controlWs) {
+    this.internalControl.initControl(controlWs)
+  }
+
+  connectInternalControlVideoSocket(videoWs) {
+    this.internalControl.initVideo(videoWs)
   }
 
   close() {
     this.drone.close();
-    this.control.close();
-    this.isUp = false;
+    this.externalControl.close();
+    this.internalControl.close();
   }
 
   private onCommandReceived(command: Command) {
@@ -36,10 +47,12 @@ export class Operator {
   }
 
   private onDroneStateUpdate(state: ds.NavData) {
-    this.control.sendState(state)
+    this.externalControl.sendState(state)
+    this.internalControl.sendState(state)
   }
 
-  private onDroneVideoFrame(frame: any) {
-    this.control.sendVideoChunk(frame)
+  private onDroneVideoFrame(chunk) {
+    this.externalControl.sendVideoChunk(chunk)
+    this.internalControl.sendVideoChunk(chunk)
   }
 }

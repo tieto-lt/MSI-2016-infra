@@ -5,34 +5,46 @@ import { Command, CommandType, Move } from './models/commands';
 import * as request from 'request'
 var WebSocket = require('ws')
 
+export class ControlAuthenticator {
+
+  //TODO smth better like toke auth
+  static connect(callback: (state: OperatorState, controlWs, videoWs) => any) {
+    request.post(`${Constants.httpOperators()}`, (error, response, body) => {
+      let state: OperatorState = JSON.parse(body)
+      let controlWs = new WebSocket(`${Constants.wsControlPath(state.id)}`);
+      let videoWs = new WebSocket(`${Constants.wsVideoPath(state.id)}`)
+
+      callback(state, controlWs, videoWs)
+    });
+  }
+}
+
 export class Control {
 
   private controlWs: any;
-  private videows: any
+  private videoWs: any
 
   constructor(private commandReceiveCallback: (command: Command) => any) {}
 
-  connect(callback: (state: OperatorState) => any) {
-    this.close();
+  initControl(controlWs) {
+    this.closeSocket(this.controlWs)
+    this.controlWs = controlWs;
+    this.controlWs.on('message', this.onCommandReceive())
+  }
 
-    request.post(`${Constants.httpOperators()}`, (error, response, body) => {
-      let state: OperatorState = JSON.parse(body)
-      this.controlWs = new WebSocket(`${Constants.wsControlPath(state.id)}`);
-      this.controlWs.on('message', this.onCommandReceive())
-      this.videows = new WebSocket(`${Constants.wsVideoPath(state.id)}`)
-
-      callback(state)
-    });
+  initVideo(videoWs) {
+    this.closeSocket(this.videoWs)
+    this.videoWs = videoWs;
   }
 
   close() {
-    this.controlWs && this.controlWs.close();
-    this.videows && this.videows.close();
+    this.closeSocket(this.controlWs);
+    this.closeSocket(this.videoWs);
   }
 
   sendVideoChunk(parsedVideo) {
-    if (this.isWsOpen(this.videows)) {
-      this.videows.send(parsedVideo, { binary: true });
+    if (this.isWsOpen(this.videoWs)) {
+      this.videoWs.send(parsedVideo, { binary: true });
     }
   }
 
@@ -40,6 +52,10 @@ export class Control {
     if (this.isWsOpen(this.controlWs)) {
       this.controlWs.send(JSON.stringify(state));
     }
+  }
+
+  private closeSocket(ws) {
+    ws && ws.close();
   }
 
   private isWsOpen(ws): boolean {
