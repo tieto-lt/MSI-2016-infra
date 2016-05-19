@@ -16,6 +16,10 @@ export class Drone {
   connect() {
     this.close();
     this.client = arDrone.createClient();
+    //Send reduced amount of NAVDATA
+    this.client.config('general:navdata_demo', 'FALSE');
+    //this.client.config('general:navdata_options', 777060865)
+    this.videoStream = this.client.getVideoStream();
     this.videoStream = this.client.getVideoStream();
     this.client.on('navdata', this.onNavData());
     this.videoParser = new PaVEParser()
@@ -28,43 +32,24 @@ export class Drone {
 
   sendCommand(command: Command) {
     console.log(command);
-    switch (command.commandType) {
-      case "stop":
-        this.client.stop();
-        break;
-      case "takeoff":
-        this.client.takeoff();
-        // console.log("takeoff");
-        break;
-      case "land":
-        this.client.land();
-        // console.log("land");
-        break;
-      case "up":
-        this.client.up(this.getSpeed(command));
-        break;
-      case "down":
-        this.client.down(this.getSpeed(command));
-        break;
-      case "front":
-        this.client.front(this.getSpeed(command));
-        break;
-      case "back":
-        this.client.back(this.getSpeed(command));
-        break;
-      case "left":
-        this.client.left(this.getSpeed(command));
-        break;
-      case "right":
-        this.client.right(this.getSpeed(command));
-        break;
-      case "clockwise":
-        this.client.clockwise(this.getSpeed(command));
-        break;
-      case "counterClockwise":
-        this.client.counterClockwise(this.getSpeed(command));
-        break;
-    }
+    let mapping = new Map<CommandType, (command: Command) => any>()
+    mapping.set("stop", c => this.client.stop())
+    mapping.set("takeoff", c => this.client.takeoff())
+    mapping.set("land", c => this.client.land())
+    mapping.set("up", c => this.client.up(this.getSpeed(c)))
+    mapping.set("down", c => this.client.down(this.getSpeed(c)))
+    mapping.set("front", c => this.client.front(this.getSpeed(c)))
+    mapping.set("back", c => this.client.back(this.getSpeed(c)))
+    mapping.set("left", c => this.client.left(this.getSpeed(c)))
+    mapping.set("right", c =>this.client.right(this.getSpeed(c)))
+    mapping.set("clockwise", c => this.client.clockwise(this.getSpeed(c)))
+    mapping.set("counterClockwise", c => this.client.counterClockwise(this.getSpeed(c)))
+    mapping.set("horizontalCamera", c => this.client.config('video:video_channel', 0))
+    mapping.set("verticalCamera", c => this.client.config('video:video_channel', 3))
+    mapping.set("disableEmergency", c => this.client.disableEmergency())
+
+    let commandFunction: (command: Command) => any = mapping.get(command.commandType)
+    commandFunction(command)
   }
 
   private getSpeed(command: Command): number {

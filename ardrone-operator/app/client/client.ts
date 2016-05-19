@@ -1,21 +1,23 @@
 class Keyboard {
   public static get WS_CONTROL_URL(): string { return "ws://localhost:9000" }
   public static get HTTP_CONTROL_URL(): string { return "http://localhost:9000" }
+
   public static get SERVER_PORT(): number { return 8000 }
   public static get PLUS(): number { return 187 }
   public static get MINUS(): number { return 189 }
 
   public static get UP(): number { return 38 }
-  public static get DOWN(): number { return 40}
-  public static get RIGHT(): number { return 39}
-  public static get LEFT(): number { return 37}
-  public static get W_KEY(): number { return 87}
-  public static get S_KEY(): number { return 83}
-  public static get D_KEY(): number { return 68}
-  public static get A_KEY(): number { return 65}
-
-  public static get ESC(): number { return 27}
-  public static get ENTER(): number { return 13}
+  public static get DOWN(): number { return 40 }
+  public static get RIGHT(): number { return 39 }
+  public static get LEFT(): number { return 37 }
+  public static get W_KEY(): number { return 87 }
+  public static get S_KEY(): number { return 83 }
+  public static get D_KEY(): number { return 68 }
+  public static get A_KEY(): number { return 65 }
+  public static get PAGE_UP(): number { return 33 }
+  public static get PAGE_DOWN(): number { return 34 }
+  public static get ESC(): number { return 27 }
+  public static get ENTER(): number { return 13 }
 }
 
 class OperatorClient {
@@ -25,24 +27,35 @@ class OperatorClient {
   constructor() {
     $("#drone-connect").click(() => this.connectDrone())
     $("#drone-speed").val(0.1)
-    $("#stop-command").click(() => this.sendCommandForDrone("stop", undefined));
-    $("#take-off-command").click(() => this.sendCommandForDrone("takeoff", undefined));
-    $("#land-command").click(() => this.sendCommandForDrone("land", undefined));
-    $("#up-command").click(() => this.sendCommandForDrone("up", this.currentSpeed()));
-    $("#down-command").click(() => this.sendCommandForDrone("down", this.currentSpeed()));
-    $("#front-command").click(() => this.sendCommandForDrone("front", this.currentSpeed()));
-    $("#back-command").click(() => this.sendCommandForDrone("back", this.currentSpeed()));
-    $("#left-command").click(() => this.sendCommandForDrone("left", this.currentSpeed()));
-    $("#right-command").click(() => this.sendCommandForDrone("right", this.currentSpeed()));
-    $("#clockwise-command").click(() => this.sendCommandForDrone("clockwise", this.currentSpeed()));
-    $("#counterClockwise-command").click(() => this.sendCommandForDrone("counterClockwise", this.currentSpeed()));
-
+    $("#drone-disable-emergency").click(() => this.sendCommandForDrone("disableEmergency", null))
     $(document).keydown(e => this.onKeyDown(e));
     $(document).keyup(e => this.onKeyUp(e));
 
     this.ws = new WebSocket("ws://localhost:8000/ws/api")
     this.ws.onmessage = (ev) => {
       let droneState = JSON.parse(ev.data)
+      let demo = droneState.demo || { velocity: {}}
+      let gps = droneState.gps || {}
+
+      let selectedState = {
+        demo: {
+          controlState: demo.controlState,
+          flyState: demo.flyState,
+          batteryPercentage: demo.batteryPercentage,
+          altitude: demo.altitude,
+          altitudeMeters: demo.altitudeMeters,
+          velocity: {
+            x: demo.velocity.x,
+            y: demo.velocity.y,
+            z: demo.velocity.z,
+          },
+          xVelocity: demo.xVelocity,
+          yVelocity: demo.yVelocity,
+          zVelocity: demo.zVelocity,
+          gps: gps
+        }
+      }
+      $("#navdata").text(JSON.stringify(selectedState, null, 2))
     }
   }
 
@@ -62,14 +75,14 @@ class OperatorClient {
   }
 
   onKeyDown(e) {
-    console.log(e.which)
-    console.log(Keyboard.UP, 'ss')
+    let speedStep = 0.1
+
     switch (e.which) {
       case Keyboard.PLUS:
-        $("#drone-speed").val(this.currentSpeed() + 0.1);
+        this.setCurrentSpeed(this.currentSpeed() + speedStep);
         break;
       case Keyboard.MINUS:
-        $("#drone-speed").val(this.currentSpeed() - 0.1);
+        this.setCurrentSpeed(this.currentSpeed() - speedStep);
         break;
       case Keyboard.UP:
         this.sendCommandForDrone("up", this.currentSpeed());
@@ -101,11 +114,22 @@ class OperatorClient {
       case Keyboard.ESC:
         this.sendCommandForDrone("land", undefined)
         break;
+      case Keyboard.PAGE_UP:
+        this.sendCommandForDrone("horizontalCamera", undefined)
+        break;
+      case Keyboard.PAGE_DOWN:
+        this.sendCommandForDrone("verticalCamera", undefined)
+        break;
     }
     e.preventDefault();
   }
+
+  setCurrentSpeed(speed: number) {
+    $("#drone-speed").val(Math.round(Math.abs(speed % 1) * 100) / 100)
+  }
+
   currentSpeed(): number {
-    return $("#drone-speed").val()
+    return $("#drone-speed").val() % 1;
   }
 
   sendCommandForDrone(command, speed) {
@@ -124,6 +148,7 @@ class OperatorClient {
        type: 'GET',
     });
   }
+
   private isWsOpen(ws: WebSocket) {
     return ws && ws.readyState === WebSocket.OPEN;
   }

@@ -2,7 +2,9 @@
  *  Command models
  */
 export type CommandType = "takeoff" | "land" | "stop" | "up" | "down" | "front" | "back" |
-    "left" | "right" | "clockwise" | "counterClockwise"
+    "left" | "right" | "clockwise" | "counterClockwise" | "horizontalCamera" | "verticalCamera" |
+    "disableEmergency"
+
 
 export class Command {
   constructor(public commandType: CommandType) {}
