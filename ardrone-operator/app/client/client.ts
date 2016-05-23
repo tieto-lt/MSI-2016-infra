@@ -23,6 +23,7 @@ class Keyboard {
 class OperatorClient {
 
   private ws: WebSocket;
+  private keyDowned = false;
 
   constructor() {
     $("#drone-connect").click(() => this.connectDrone())
@@ -60,6 +61,7 @@ class OperatorClient {
   }
 
   onKeyUp(e) {
+    this.keyDowned = false;
     console.log('sss')
     switch (e.which) {
       case Keyboard.UP:
@@ -75,6 +77,9 @@ class OperatorClient {
   }
 
   onKeyDown(e) {
+    if (this.keyDowned) return
+    
+    this.keyDowned = true
     let speedStep = 0.1
 
     switch (e.which) {

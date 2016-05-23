@@ -16,11 +16,15 @@ export class Drone {
   connect() {
     this.close();
     this.client = arDrone.createClient();
-    //Send reduced amount of NAVDATA
-    this.client.config('general:navdata_demo', 'FALSE');
-    //this.client.config('general:navdata_options', 777060865)
+    this.client.config('general:navdata_options', 777060865)
     this.videoStream = this.client.getVideoStream();
     this.videoStream = this.client.getVideoStream();
+    this.videoStream.on('error', err => {
+      if (err) {
+        console.log('err', err)
+        this.videoParser = new PaVEParser()
+      }
+    })
     this.client.on('navdata', this.onNavData());
     this.videoParser = new PaVEParser()
     this.videoStream.on('data', this.onVideoData())
