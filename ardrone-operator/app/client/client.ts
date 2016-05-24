@@ -29,6 +29,7 @@ class OperatorClient {
     $("#drone-connect").click(() => this.connectDrone())
     $("#drone-speed").val(0.1)
     $("#drone-disable-emergency").click(() => this.sendCommandForDrone("disableEmergency", null))
+    $("#drone-calibrate").click(() => this.sendCommandForDrone("calibrate", null))
     $(document).keydown(e => this.onKeyDown(e));
     $(document).keyup(e => this.onKeyUp(e));
 
@@ -36,7 +37,6 @@ class OperatorClient {
     this.ws.onmessage = (ev) => {
       let droneState = JSON.parse(ev.data)
       let demo = droneState.demo || { velocity: {}}
-      let gps = droneState.gps || {}
 
       let selectedState = {
         demo: {
@@ -52,8 +52,7 @@ class OperatorClient {
           },
           xVelocity: demo.xVelocity,
           yVelocity: demo.yVelocity,
-          zVelocity: demo.zVelocity,
-          gps: gps
+          zVelocity: demo.zVelocity
         }
       }
       $("#navdata").text(JSON.stringify(selectedState, null, 2))
@@ -78,7 +77,7 @@ class OperatorClient {
 
   onKeyDown(e) {
     if (this.keyDowned) return
-    
+
     this.keyDowned = true
     let speedStep = 0.1
 

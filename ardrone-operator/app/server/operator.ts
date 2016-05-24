@@ -1,7 +1,7 @@
 import { Control, ControlAuthenticator } from './control'
 import { Drone } from './drone'
 import { OperatorState } from './models/operator_state';
-import { Command, CommandType, Move } from './models/commands';
+import { Command, CommandType, Move, MissionCommand, MissionState } from './models/commands';
 import * as ds from './models/drone_state'
 
 export class Operator {
@@ -44,6 +44,10 @@ export class Operator {
     this.drone.close();
     this.externalControl.close();
     this.internalControl.close();
+  }
+
+  runMission(commands: Array<MissionCommand>): MissionState {
+    return this.drone.runMission(commands)
   }
 
   private onCommandReceived(command: Command) {

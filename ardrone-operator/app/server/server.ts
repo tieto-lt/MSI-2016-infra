@@ -2,6 +2,7 @@ var WebSocket = require('ws');
 import * as express from 'express';
 import { Operator } from './operator'
 import { Constants } from './constants'
+var bodyParser = require('body-parser')
 
 const WS_CONTROL_PATTERN = new RegExp("/ws/api$")
 const WS_VIDEO_PATTERN = new RegExp("/ws/video$")
@@ -17,6 +18,7 @@ class Server {
     app.use(express.static('build/client')); //Javascripts
     app.use('/node_modules', express.static('node_modules'))
     app.use('/mock/dronestream-client-custom', express.static('app/mock/dronestream-client-custom'))
+    app.use(bodyParser.json())
 
     this.operator = new Operator();
 
@@ -27,6 +29,10 @@ class Server {
 
     app.get('/api/connect/control', (req, res, next) => {
       this.operator.connectExternalControl((body) => res.json(body))
+    })
+
+    app.post('/api/mission', (req, res, next) => {
+      res.json(this.operator.runMission(req.body))
     })
 
     const server = app.listen(Constants.SERVER_PORT, "localhost", () => {
