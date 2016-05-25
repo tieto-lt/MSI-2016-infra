@@ -22,9 +22,9 @@ export class MissionsExecutor {
     //this.client.config('detect:detect_type', 12);
   }
 
-  runMission(commands: Array<MissionCommand>) {
+  runMission(commands: Array<MissionCommand>, callback: (state: MissionState) => void) {
     if (this.isMissionInProgress) {
-      return new MissionState("inProgress", 0, 0, 0)
+      return new MissionState("inProgress")
     }
     this.isMissionInProgress = true
     let mission = this.toMission(commands)
@@ -35,8 +35,10 @@ export class MissionsExecutor {
           console.trace("Oops, something bad happened: %s", err.message);
           mission.client().stop();
           mission.client().land();
+          callback(MissionState.error(err.message))
         } else {
           console.log("Mission success!");
+          callback(new MissionState("completed"))
         }
       } finally {
         this.isMissionInProgress = false

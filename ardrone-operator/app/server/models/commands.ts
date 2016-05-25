@@ -1,25 +1,41 @@
 /**
  *  Command models
  */
+
+export type PayloadType = "DirectCommand" | "Mission" | "OperatorState"
+
+export interface ControlPayload {
+  payloadType: PayloadType
+}
+/**
+ * Direct drone commands for controllign drone in real time
+ */
 export type CommandType = "takeoff" | "land" | "stop" | "up" | "down" | "front" | "back" |
     "left" | "right" | "clockwise" | "counterClockwise" | "horizontalCamera" | "verticalCamera" |
     "disableEmergency" | "calibrate"
 
-export class Command {
+export class DirectCommand implements ControlPayload {
+
+  payloadType: PayloadType = "DirectCommand"
   constructor(public commandType: CommandType) {}
 }
 
-export class Move extends Command {
+export class Move extends DirectCommand {
   constructor(public commandType: CommandType, public speed: number) {
     super(commandType);
   }
 }
 
+/**
+ * Mission commands when submitting whole mission
+ */
 //TODO think about mission task
 export type MissionCommandType = "takeoff" | "altitude" | "cw" | "ccw" | "hover" | "go" | "zero" | "wait"
   | "forward" | "backward" | "left" | "right" | "up" | "down"
 
-export class MissionCommand {
+export class MissionCommand implements ControlPayload {
+  payloadType: PayloadType = "Mission"
+
   constructor(public commandType: MissionCommandType, public args: Array<any>) {
     this.args = this.args || []
   }
@@ -27,27 +43,20 @@ export class MissionCommand {
 
 export type MissionStatus = "started" | "completed" | "inProgress" | "error"
 
-export class MissionState {
+export class MissionDroneState {
   constructor(
-    public status: MissionStatus,
     public x: number = 0,
     public y: number = 0,
     public z: number = 0) {}
 }
 
-export class MoveMissionCommand extends MissionCommand {
-  constructor(public commandType: MissionCommandType, public distance: number) {
-    super(commandType, [distance]);
-  }
-}
-
-export class GoMissionCommand extends MissionCommand {
+export class MissionState {
   constructor(
-    public commandType: MissionCommandType,
-    public x: number,
-    public y: number,
-    public z: number) {
+    public status: MissionStatus,
+    public statusMessage: string = "OK",
+    public droneState?: MissionDroneState) {}
 
-    super(commandType, [{x: x, y: y, z: z}]);
+  static error(error: string): MissionState {
+    return new MissionState("error", error)
   }
 }

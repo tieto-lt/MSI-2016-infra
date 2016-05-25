@@ -1,22 +1,21 @@
 import arDrone = require('ar-drone')
 var autonomy = require('ardrone-autonomy');
 import * as ds from './models/drone_state'
-import { Command, CommandType, Move, MissionCommand, MissionCommandType, MissionState } from './models/commands';
+import { DirectCommand, CommandType, Move, MissionCommand, MissionCommandType, MissionState } from './models/commands';
 import { PaVEParser } from './PaVEParser';
 import { MissionsExecutor } from './missions_executor';
 
-const MISSION_COMMAND_MAPPING = new Map<MissionCommandType, (command: Command, mission: any) => any>()
+const MISSION_COMMAND_MAPPING = new Map<MissionCommandType, (command: DirectCommand, mission: any) => any>()
 
 export class Drone {
 
   private client: any
   private videoStream: any
   private videoParser: PaVEParser
-  private isMissionInProgress: boolean
   private missionsExecutor: MissionsExecutor
 
   constructor(
-    private stateCalback: (state: ds.NavData) => any,
+    private stateCalback: (state: [ds.NavData, MissionState]) => any,
     private videoCallback: (any) => any) {}
 
   connect() {
@@ -41,9 +40,9 @@ export class Drone {
     this.client = null;
   }
 
-  sendCommand(command: Command) {
+  sendCommand(command: DirectCommand) {
     console.log(command);
-    let mapping = new Map<CommandType, (command: Command) => any>()
+    let mapping = new Map<CommandType, (command: DirectCommand) => any>()
     mapping.set("stop", c => this.client.stop())
     mapping.set("takeoff", c => this.client.takeoff())
     mapping.set("land", c => this.client.land())
@@ -60,20 +59,22 @@ export class Drone {
     mapping.set("disableEmergency", c => this.client.disableEmergency())
     mapping.set("calibrate", c => this.client.calibrate(0))
 
-    let commandFunction: (command: Command) => any = mapping.get(command.commandType)
+    let commandFunction: (command: DirectCommand) => any = mapping.get(command.commandType)
     commandFunction(command)
   }
 
-  runMission(commands: Array<MissionCommand>): MissionState {
+  runMission(
+    commands: Array<MissionCommand>,
+     callback: (state: MissionState) => void): MissionState {
+
     if (this.missionsExecutor) {
-      return this.missionsExecutor.runMission(commands)
+      return this.missionsExecutor.runMission(commands, callback)
     } else {
-      console.log('Client not connected')
-      return new MissionState("error")
+      return MissionState.error("Client not connected")
     }
   }
 
-  private getSpeed(command: Command): number {
+  private getSpeed(command: DirectCommand): number {
     let moveCommand = <Move>command;
     return moveCommand.speed;
   }
@@ -88,8 +89,7 @@ export class Drone {
 
   private onNavData() {
     return (data: ds.NavData) => {
-      console.log(this.missionsExecutor.getState(), 'state')
-      this.stateCalback(data);
+      this.stateCalback([data, this.missionsExecutor.getState()]);
     }
   }
 }

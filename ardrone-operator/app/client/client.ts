@@ -1,6 +1,4 @@
 class Keyboard {
-  public static get WS_CONTROL_URL(): string { return "ws://localhost:9000" }
-  public static get HTTP_CONTROL_URL(): string { return "http://localhost:9000" }
 
   public static get SERVER_PORT(): number { return 8000 }
   public static get PLUS(): number { return 187 }
@@ -55,7 +53,7 @@ class OperatorClient {
           zVelocity: demo.zVelocity
         }
       }
-      $("#navdata").text(JSON.stringify(selectedState, null, 2))
+      $("#navdata").text(JSON.stringify(droneState, null, 2))
     }
   }
 
@@ -139,6 +137,7 @@ class OperatorClient {
   sendCommandForDrone(command, speed) {
     if (this.isWsOpen(this.ws)) {
       let commandObj = {
+        payloadType: "DirectCommand",
         commandType: command,
         speed: speed
       }

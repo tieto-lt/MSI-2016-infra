@@ -1,6 +1,7 @@
 var WebSocket = require('ws');
 import * as express from 'express';
 import { Operator } from './operator'
+import { Configuration } from '../config'
 import { Constants } from './constants'
 var bodyParser = require('body-parser')
 
@@ -20,7 +21,8 @@ class Server {
     app.use('/mock/dronestream-client-custom', express.static('app/mock/dronestream-client-custom'))
     app.use(bodyParser.json())
 
-    this.operator = new Operator();
+    //TODO get this from config or smth
+    this.operator = new Operator(Configuration.operatorToken);
 
     app.get('/api/connect/drone', (req, res, next) => {
       this.operator.droneConnect();
@@ -35,7 +37,7 @@ class Server {
       res.json(this.operator.runMission(req.body))
     })
 
-    const server = app.listen(Constants.SERVER_PORT, "localhost", () => {
+    const server = app.listen(Configuration.serverPort, "localhost", () => {
 
      const {address, port} = server.address();
      console.log(`Operator HTTP server listening on ${address}:${port}`);
@@ -44,7 +46,7 @@ class Server {
     //WS
     const wsServer = new WebSocket.Server({server: server});
     wsServer.on('connection', this.handleConnecion());
-    console.log(`Operator WS listening on ws://localhost:${Constants.SERVER_PORT}`);
+    console.log(`Operator WS listening on ws://localhost:${Configuration.serverPort}`);
   }
 
   handleConnecion() {
