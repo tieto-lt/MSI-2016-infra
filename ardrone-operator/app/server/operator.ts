@@ -33,28 +33,28 @@ export class Operator {
 
   connectExternalControl(callback: (state: OperatorState) => any) {
     let controlWs = new WebSocket(`${Constants.wsControlPath(this.operatorToken)}`)
-    controlWs.onopen(() => {
+    controlWs.on('open', () => {
       let videoWs = new WebSocket(`${Constants.wsVideoPath(this.operatorToken)}`)
       this.externalControl.initControl(controlWs)
       this.externalControl.initVideo(videoWs)
       this.updateOperatorState(state => state.externalControlState.isControlUp = true)
-      videoWs.onerror(err => {
+      videoWs.on('error', err => {
         console.log("Failed to connect to external control video", err)
         this.updateOperatorState(state => {
           state.externalControlState.isVideoUp = false
           state.error = "Can't connect to external control video socket"
         })
       })
-      videoWs.onopen(() => this.updateOperatorState(state => state.externalControlState.isVideoUp = true))
+      videoWs.on('open', () => this.updateOperatorState(state => state.externalControlState.isVideoUp = true))
     })
-    controlWs.onerror((err) => {
+    controlWs.on('error', err => {
       console.log("Failed to connect to external control", err)
       this.updateOperatorState( state => {
         state.externalControlState.isControlUp = false
         state.error = "Can't connect to external control socket"
       })
-    })
-
+    });
+    callback(this.operatorState);
   }
 
   connectInternalControlSocket(controlWs) {
@@ -103,6 +103,7 @@ export class Operator {
     let state = this.operatorState.copy()
     updater(state)
     this.internalControl.sendState(state.copy())
+    this.externalControl.sendState(state.copy())
     this.operatorState = state
   }
 }

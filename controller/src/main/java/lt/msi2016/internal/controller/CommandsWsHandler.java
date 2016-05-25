@@ -21,13 +21,13 @@ public class CommandsWsHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String operatorToken = WsUtils.getOperatorToken(session);
         operatorsRegistry.registerOperatorSession(operatorToken, session);
-        LOG.info("Got connection from {}", operatorToken);
+        LOG.info("Got connection from {}, {}", operatorToken, session.getUri());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String operatorToken = WsUtils.getOperatorToken(session);
-        LOG.info("Received message {}: {}", operatorToken, message);
+//        LOG.info("Received message {}: {}", operatorToken, message);
         super.handleTextMessage(session, message);
     }
 

@@ -9,11 +9,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class Application extends SpringBootServletInitializer {
+public class Application {
 
     private static Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         LOG.info("Im up!");
         return application.sources(Application.class);

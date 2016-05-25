@@ -13,6 +13,7 @@ public class VideoStreamWsHandler extends BinaryWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        session.setBinaryMessageSizeLimit(1000000);
         LOG.info("Got connection from {}", session.getUri());
     }
 
