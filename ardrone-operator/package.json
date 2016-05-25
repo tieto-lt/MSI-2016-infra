@@ -16,6 +16,7 @@
     "ar-drone": "0.3.3",
     "ardrone-autonomy": "0.1.2",
     "body-parser": "^1.15.1",
+    "bootstrap": "^3.3.6",
     "buffy": "0.0.5",
     "dronestream": "1.1.1",
     "express": "^4.13.4",

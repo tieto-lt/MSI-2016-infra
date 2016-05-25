@@ -2,12 +2,12 @@ import { Configuration } from '../config'
 
 export class Constants {
 
-  public static wsControlPath(operatorId: string): string {
-    return `${Configuration.wsControlUrl}/ws/api/${operatorId}`
+  public static wsControlPath(operatorToken: string): string {
+    return `${Configuration.wsControlUrl}/ws/api/${operatorToken}`
   }
 
-  public static wsVideoPath(operatorId: string): string {
-    return `${Configuration.wsControlUrl}/ws/video/${operatorId}`;
+  public static wsVideoPath(operatorToken: string): string {
+    return `${Configuration.wsControlUrl}/ws/video/${operatorToken}`;
   }
 
   public static wsOperatorControlPath(): string {

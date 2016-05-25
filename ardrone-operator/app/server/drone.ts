@@ -41,6 +41,7 @@ export class Drone {
   }
 
   sendCommand(command: DirectCommand) {
+    if (!this.client) return
     console.log(command);
     let mapping = new Map<CommandType, (command: DirectCommand) => any>()
     mapping.set("stop", c => this.client.stop())

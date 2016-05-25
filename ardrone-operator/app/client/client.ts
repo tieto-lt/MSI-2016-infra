@@ -33,9 +33,20 @@ class OperatorClient {
 
     this.ws = new WebSocket("ws://localhost:8000/ws/api")
     this.ws.onmessage = (ev) => {
-      let droneState = JSON.parse(ev.data)
-      let demo = droneState.demo || { velocity: {}}
-
+      let operatorState = JSON.parse(ev.data)
+      let demo = operatorState.droneState.demo || { velocity: {}}
+      let droneStateSummary = {
+        state: operatorState.state,
+        token: operatorState.operatorToken,
+        externalCtrl: operatorState.externalControlState,
+        isDroneReady: operatorState.isDroneReady,
+        missionState: operatorState.missionState,
+        battery: demo.batteryPercentage,
+        altitude: demo.altitude,
+        ctrlState: demo.controlState,
+        flyState: demo.flyState,
+        emergency: operatorState.droneState.droneState.emergencyLanding
+      }
       let selectedState = {
         demo: {
           controlState: demo.controlState,
@@ -53,13 +64,13 @@ class OperatorClient {
           zVelocity: demo.zVelocity
         }
       }
-      $("#navdata").text(JSON.stringify(droneState, null, 2))
+      $("#summary_navdata").text(JSON.stringify(droneStateSummary, null, 2))
+      $("#navdata").text(JSON.stringify(operatorState, null, 2))
     }
   }
 
   onKeyUp(e) {
     this.keyDowned = false;
-    console.log('sss')
     switch (e.which) {
       case Keyboard.UP:
       case Keyboard.DOWN:
@@ -70,12 +81,16 @@ class OperatorClient {
       case Keyboard.A_KEY:
       case Keyboard.D_KEY:
         this.sendCommandForDrone("stop", undefined);
+        e.preventDefault();
+        return false;
     }
   }
 
   onKeyDown(e) {
-    if (this.keyDowned) return
-
+    if (this.keyDowned) {
+      e.preventDefault(); //So that page will not scroll
+      return
+    }
     this.keyDowned = true
     let speedStep = 0.1
 
@@ -124,6 +139,7 @@ class OperatorClient {
         break;
     }
     e.preventDefault();
+    return false;
   }
 
   setCurrentSpeed(speed: number) {
