@@ -20,7 +20,7 @@ export class OperatorState implements ControlPayload {
     public operatorToken: string,
     public externalControlState: ControlState,
     public isDroneReady: boolean,
-    public error?: string,
+    private error?: string,
     public missionState?: MissionState,
     public droneState?: NavData) {}
 
@@ -39,9 +39,7 @@ export class OperatorState implements ControlPayload {
         this.droneState)
     }
 
-    copyError(error: string): OperatorState {
-      let copied = this.copy()
-      copied.error = error
-      return copied
+    setError(error: string) {
+      this.error = error + " " + new Date().toTimeString()
     }
 }

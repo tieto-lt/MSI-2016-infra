@@ -2,7 +2,7 @@
  *  Command models
  */
 
-export type PayloadType = "DirectCommand" | "Mission" | "OperatorState"
+export type PayloadType = "DirectCommand" | "MissionPlan" | "OperatorState"
 
 export interface ControlPayload {
   payloadType: PayloadType
@@ -33,10 +33,15 @@ export class Move extends DirectCommand {
 export type MissionCommandType = "takeoff" | "altitude" | "cw" | "ccw" | "hover" | "go" | "zero" | "wait"
   | "forward" | "backward" | "left" | "right" | "up" | "down"
 
-export class MissionCommand implements ControlPayload {
-  payloadType: PayloadType = "Mission"
+export class MissionPlan implements ControlPayload {
+  payloadType: PayloadType = "MissionPlan"
 
-  constructor(public commandType: MissionCommandType, public args: Array<any>) {
+  constructor(public commands: MissionCommand[]) {}
+}
+
+export class MissionCommand {
+
+  constructor(public commandType: MissionCommandType, public args: any[]) {
     this.args = this.args || []
   }
 }

@@ -13,11 +13,13 @@
   <div class="container">
     <div class="panel panel-default">
       <div class="panel-body">
+        <div id="ok-placeholder" class="alert alert-success" role="alert">Everything seems OK</div>
+        <div id="error-placeholder" class="alert alert-danger" role="alert" style="display: none">Boom</div>
         <div class="row">
           <div class="col-lg-6">
             <div class="btn-group">
               <button id="drone-connect" type="button" class="btn btn-default">Drone Connect</button>
-              <button id="drone-connect" type="button" class="btn btn-default">Control Connect</button>
+              <button id="control-connect" type="button" class="btn btn-default">Control Connect</button>
               <button id="drone-disable-emergency" type="button" class="btn btn-default">Disable emergency</button>
               <button id="drone-calibrate" type="button" class="btn btn-default">Calibrate</button>
             </div>
@@ -38,7 +40,8 @@
       </div>
     </div>
   </div>
-  <!-- Scripts goes here -->
+
+  <!-- Scripts go here -->
   <script src="node_modules/dronestream/dist/vendor/broadway/sylvester.js"></script>
   <script src="node_modules/dronestream/dist/vendor/broadway/glUtils.js"></script>
   <script src="node_modules/dronestream/dist/vendor/broadway/util.js"></script>

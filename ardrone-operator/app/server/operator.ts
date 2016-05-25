@@ -2,7 +2,7 @@ import { Control } from './control'
 import { Constants } from './constants';
 import { Drone } from './drone'
 import { OperatorState } from './models/operator_state';
-import { DirectCommand, CommandType, Move, MissionCommand, MissionState, ControlPayload } from './models/commands';
+import { DirectCommand, CommandType, Move, MissionCommand, MissionState, ControlPayload, MissionPlan } from './models/commands';
 import * as ds from './models/drone_state'
 var WebSocket = require('ws')
 
@@ -14,8 +14,8 @@ export class Operator {
   private operatorState: OperatorState
 
   constructor(private operatorToken: string) {
-    this.externalControl = new Control(cmd => this.onCommandReceived(cmd))
-    this.internalControl = new Control(cmd => this.onCommandReceived(cmd))
+    this.externalControl = new Control(cmd => this.onPayloadReceived(cmd))
+    this.internalControl = new Control(cmd => this.onPayloadReceived(cmd))
 
     this.drone = new Drone(
       state => this.onDroneStateUpdate(state),
@@ -25,10 +25,13 @@ export class Operator {
 
   droneConnect() {
     //second connect fucks up video stream TODO
-    this.drone.connect();
-    this.updateOperatorState(state => {
-      state.isDroneReady = true
-    })
+    this.drone.connect(err => {
+      this.updateOperatorState(state => {
+        console.log(err)
+        state.setError(err.message)
+        state.isDroneReady = false
+      })
+    });
   }
 
   connectExternalControl(callback: (state: OperatorState) => any) {
@@ -42,7 +45,7 @@ export class Operator {
         console.log("Failed to connect to external control video", err)
         this.updateOperatorState(state => {
           state.externalControlState.isVideoUp = false
-          state.error = "Can't connect to external control video socket"
+          state.setError("Can't connect to external control video socket")
         })
       })
       videoWs.on('open', () => this.updateOperatorState(state => state.externalControlState.isVideoUp = true))
@@ -51,9 +54,9 @@ export class Operator {
       console.log("Failed to connect to external control", err)
       this.updateOperatorState( state => {
         state.externalControlState.isControlUp = false
-        state.error = "Can't connect to external control socket"
+        state.setError("Can't connect to external control socket")
       })
-    });
+    })
     callback(this.operatorState);
   }
 
@@ -80,16 +83,20 @@ export class Operator {
     return missionState
   }
 
-  private onCommandReceived(command: ControlPayload) {
-    if (command.payloadType === "DirectCommand") {
-      this.drone.sendCommand(<DirectCommand>command)
+  private onPayloadReceived(payload: ControlPayload) {
+    if (payload.payloadType === "DirectCommand") {
+      this.drone.sendCommand(<DirectCommand>payload)
+    } else if (payload.payloadType === "MissionPlan") {
+      this.runMission((<MissionPlan>payload).commands)
+    } else {
+      this.updateOperatorState(state => state.setError("Unsupported command received"))
     }
-    //TODO implement mission payload
   }
 
   private onDroneStateUpdate(droneState: [ds.NavData, MissionState]) {
     this.updateOperatorState(state => {
       state.droneState = droneState[0]
+      state.isDroneReady = droneState[0] && true
       state.missionState = droneState[1]
     })
   }
@@ -102,8 +109,9 @@ export class Operator {
   private updateOperatorState(updater: (state: OperatorState) => void) {
     let state = this.operatorState.copy()
     updater(state)
-    this.internalControl.sendState(state.copy())
-    this.externalControl.sendState(state.copy())
+    let cp = state.copy()
+    this.internalControl.sendState(cp)
+    this.externalControl.sendState(cp)
     this.operatorState = state
   }
 }

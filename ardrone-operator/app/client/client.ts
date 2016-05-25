@@ -25,6 +25,7 @@ class OperatorClient {
 
   constructor() {
     $("#drone-connect").click(() => this.connectDrone())
+    $("#control-connect").click(() => this.connectControl())
     $("#drone-speed").val(0.1)
     $("#drone-disable-emergency").click(() => this.sendCommandForDrone("disableEmergency", null))
     $("#drone-calibrate").click(() => this.sendCommandForDrone("calibrate", null))
@@ -34,7 +35,9 @@ class OperatorClient {
     this.ws = new WebSocket("ws://localhost:8000/ws/api")
     this.ws.onmessage = (ev) => {
       let operatorState = JSON.parse(ev.data)
-      let demo = operatorState.droneState.demo || { velocity: {}}
+      let droneState = operatorState.droneState && operatorState.droneState.droneState || {}
+      let demo = droneState.demo || { velocity: {}}
+
       let droneStateSummary = {
         state: operatorState.state,
         token: operatorState.operatorToken,
@@ -45,7 +48,7 @@ class OperatorClient {
         altitude: demo.altitude,
         ctrlState: demo.controlState,
         flyState: demo.flyState,
-        emergency: operatorState.droneState.droneState.emergencyLanding
+        emergency: droneState.emergencyLanding
       }
       let selectedState = {
         demo: {
@@ -63,6 +66,14 @@ class OperatorClient {
           yVelocity: demo.yVelocity,
           zVelocity: demo.zVelocity
         }
+      }
+      if (operatorState.error) {
+        $('#error-placeholder').text(operatorState.error)
+        $('#error-placeholder').show()
+        $('#ok-placeholder').hide()
+      } else {
+        $('#error-placeholder').hide()
+        $('#ok-placeholder').show()
       }
       $("#summary_navdata").text(JSON.stringify(droneStateSummary, null, 2))
       $("#navdata").text(JSON.stringify(operatorState, null, 2))
@@ -164,6 +175,13 @@ class OperatorClient {
   connectDrone() {
     $.ajax({
        url: '/api/connect/drone',
+       type: 'GET',
+    });
+  }
+
+  connectControl() {
+    $.ajax({
+       url: '/api/connect/control',
        type: 'GET',
     });
   }

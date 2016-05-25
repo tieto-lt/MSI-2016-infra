@@ -18,7 +18,7 @@ export class Drone {
     private stateCalback: (state: [ds.NavData, MissionState]) => any,
     private videoCallback: (any) => any) {}
 
-  connect() {
+  connect(onErrorCallback: (err: any) => void) {
     this.close();
     this.client = arDrone.createClient();
     this.missionsExecutor = new MissionsExecutor(this.client)
@@ -27,9 +27,11 @@ export class Drone {
     this.videoStream.on('error', err => {
       if (err) {
         this.videoParser = new PaVEParser()
+        onErrorCallback(err)
       }
     })
     this.client.on('navdata', this.onNavData());
+    this.client.on('error', onErrorCallback)
     this.videoParser = new PaVEParser()
     this.videoStream.on('data', this.onVideoData())
   }
