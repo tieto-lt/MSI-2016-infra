@@ -23,7 +23,6 @@ export class Drone {
     this.client = arDrone.createClient();
     this.missionsExecutor = new MissionsExecutor(this.client)
     this.videoStream = this.client.getVideoStream();
-    this.videoStream = this.client.getVideoStream();
     this.videoStream.on('error', err => {
       if (err) {
         this.videoParser = new PaVEParser()

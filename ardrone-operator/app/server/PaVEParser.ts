@@ -1,10 +1,11 @@
 var buffy = require('buffy')
+import stream = require('stream');
 
 const HEADER_SIZE = 68
 
 //Ported from https://github.com/bkw/node-dronestream/blob/master/lib/PaVEParser.js
 //Strips custom data produced by drone in video stream
-export class PaVEParser {
+export class PaVEParser extends stream.Stream {
   private writable = true;
   private readable = true;
 
@@ -13,6 +14,11 @@ export class PaVEParser {
   private _toRead = undefined;
   // TODO: search forward in buffer to last I-Frame
   private _frame_type = undefined;
+
+  private _frame: any;
+
+  static HEADER_SIZE_SHORT = 64;
+  static HEADER_SIZE_LONG = 68;
 
   write(buffer, cb) {
     var parser = this._parser
@@ -26,52 +32,64 @@ export class PaVEParser {
     while (true) {
       switch (this._state) {
         case 'header':
-        if (parser.bytesAhead() < HEADER_SIZE) {
-          return true;
-        }
-        signature = parser.ascii(4);
+          if (parser.bytesAhead() < PaVEParser.HEADER_SIZE_LONG) {
+            return;
+          }
 
-        if (signature !== 'PaVE') {
-          // TODO: wait/look for next PaVE frame
-          console.log('Invalid signature: ' + JSON.stringify(signature))
-          return;
-        }
+          this._frame = {
+            signature               : parser.ascii(4),
+            version                 : parser.uint8(),
+            video_codec             : parser.uint8(),
+            header_size             : parser.uint16LE(),
+            payload_size            : parser.uint32LE(),
+            encoded_stream_width    : parser.uint16LE(),
+            encoded_stream_height   : parser.uint16LE(),
+            display_width           : parser.uint16LE(),
+            display_height          : parser.uint16LE(),
+            frame_number            : parser.uint32LE(),
+            timestamp               : parser.uint32LE(),
+            total_chunks            : parser.uint8(),
+            chunk_index             : parser.uint8(),
+            frame_type              : parser.uint8(),
+            control                 : parser.uint8(),
+            stream_byte_position_lw : parser.uint32LE(),
+            stream_byte_position_uw : parser.uint32LE(),
+            stream_id               : parser.uint16LE(),
+            total_slices            : parser.uint8(),
+            slice_index             : parser.uint8(),
+            header1_size            : parser.uint8(),
+            header2_size            : parser.uint8(),
+            reserved2               : parser.buffer(2),
+            advertised_size         : parser.uint32LE(),
+            reserved3               : parser.buffer(12),
+            payload                 : null,
+          };
 
-        parser.skip(2);
-        header_size = parser.uint16LE();
-        // payload_size
-        this._toRead = parser.uint32LE();
-        // skip 18 bytes::
-        // encoded_stream_width 2
-        // encoded_stream_height 2
-        // display_width 2
-        // display_height 2
-        // frame_number 4
-        // timestamp 4
-        // total_chunks 1
-        // chunk_index 1
-        parser.skip(18);
-        this._frame_type = parser.uint8();
+          if (this._frame.signature !== 'PaVE') {
+            this.emit('error', new Error('Invalid signature: ' + JSON.stringify(this._frame.signature)));
+            // TODO: skip forward until next frame
+            return;
+          }
 
-        // bytes consumed so far: 4 + 2 + 2 + 4 + 18 + 1 = 31. Skip ahead.
-        parser.skip(header_size - 31);
+          // stupid kludge for https://projects.ardrone.org/issues/show/159
+          parser.buffer(this._frame.header_size - PaVEParser.HEADER_SIZE_SHORT);
 
-        this._state = 'payload';
-        break;
-
+          this._state = 'payload';
+          break;
         case 'payload':
-        readable = parser.bytesAhead();
-        if (readable < this._toRead) {
-          return true;
-        }
+          if (parser.bytesAhead() < this._frame.payload_size) {
+            return;
+          }
 
-        // also skip first NAL-Unit boundary: (4)
-        parser.skip(4);
-        this._toRead -= 4;
-        this.sendData(parser.buffer(this._toRead), this._frame_type, cb);
-        this._toRead = undefined;
-        this._state = 'header';
-        break;
+          this._frame.payload = parser.buffer(this._frame.payload_size);
+
+          this.emit('data', this._frame);
+          if (cb) {
+            cb(this._frame.payload);
+          }
+          this._frame = undefined;
+          this._state = 'header';
+          break;
       }
     }
   }
