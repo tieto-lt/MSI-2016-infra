@@ -1,44 +1,60 @@
 import arDrone = require('ar-drone')
 var autonomy = require('ardrone-autonomy');
-import * as ds from './models/drone_state'
-import { DirectCommand, CommandType, Move, MissionCommand, MissionCommandType, MissionState } from './models/commands';
 import { PaVEParser } from './PaVEParser';
+
+import * as ds from './models/drone_state'
+import { DirectCommand, CommandType, Move, MissionCommand, MissionCommandType, MissionState, Image } from './models/commands';
 import { MissionsExecutor } from './missions_executor';
+import { EventPublisher} from './event_publisher';
+import stream = require('stream');
+import fs = require('fs')
+import { Configuration } from '../config'
 
 const MISSION_COMMAND_MAPPING = new Map<MissionCommandType, (command: DirectCommand, mission: any) => any>()
+
+export type DroneEvent = "state" | "video" | "image" | "error"
 
 export class Drone {
 
   private client: any
-  private videoStream: any
   private videoParser: PaVEParser
+  private videoStream: stream.Stream
+  private pngStream: stream.Stream
   private missionsExecutor: MissionsExecutor
+  private lastImage: Buffer
+  private logStream: fs.WriteStream;
 
-  constructor(
-    private stateCalback: (state: [ds.NavData, MissionState]) => any,
-    private videoCallback: (any) => any) {}
-
-  connect(onErrorCallback: (err: any) => void) {
+  connect() {
     this.close();
-    this.client = arDrone.createClient();
+
+    if (Configuration.debug) {
+      console.log('Debug mode enabled')
+      this.logStream = fs.createWriteStream("./debug.log", { flags: 'a' })
+    } else {
+      this.logStream = fs.createWriteStream("/dev/null", { flags: 'a' })
+    }
+    this.client = arDrone.createClient({ log: this.logStream, frameRate: 5 });
     this.missionsExecutor = new MissionsExecutor(this.client)
-    this.videoStream = this.client.getVideoStream();
-    this.videoStream.on('error', err => {
-      if (err) {
-        this.videoParser = new PaVEParser()
-        onErrorCallback(err)
-      }
-    })
-    this.client.on('navdata', this.onNavData());
-    this.client.on('error', onErrorCallback)
+
     this.videoParser = new PaVEParser()
-    this.videoStream.on('data', this.onVideoData())
+    this.videoStream = this.client.getVideoStream()
+    this.videoStream.on('data', this.onVideoData());
+    this.videoStream.on('error', err => {
+      this.emit("error", err)
+      this.videoParser = new PaVEParser()
+    })
+
+    this.client.on('navdata', this.onNavData());
+    this.client.on('error', err => this.emit("error", err))
+
+    this.pngStream = this.client.getPngStream();
+    this.pngStream.on('data', this.onPngData());
   }
 
   close() {
-    //Seems like nothing I can close here
     this.missionsExecutor = null
     this.client = null;
+    this.logStream && this.logStream.close()
   }
 
   sendCommand(command: DirectCommand) {
@@ -70,10 +86,21 @@ export class Drone {
      callback: (state: MissionState) => void): MissionState {
 
     if (this.missionsExecutor) {
-      return this.missionsExecutor.runMission(commands, callback)
+      return this.missionsExecutor.runMission(
+        commands,
+        () => this.getCurrentImage(),
+        callback)
     } else {
       return MissionState.error("Client not connected")
     }
+  }
+
+  onEvent(event: DroneEvent, callback) {
+    EventPublisher.onEvent(event, callback)
+  }
+
+  getCurrentImage() {
+    return new Image((this.lastImage || "").toString('base64'))
   }
 
   private getSpeed(command: DirectCommand): number {
@@ -82,16 +109,25 @@ export class Drone {
   }
 
   private onVideoData() {
-    return (data: any) => {
-      this.videoParser.write(data, (parsedData) => {
-        this.videoCallback(parsedData);
-      });
+    return data => this.videoParser.write(
+      data,
+      parsedData => this.emit("video",  parsedData))
+  }
+
+  private onPngData() {
+    return (image: Buffer) => {
+      this.lastImage = image
+      //this.emit("image", image)
     }
   }
 
   private onNavData() {
     return (data: ds.NavData) => {
-      this.stateCalback([data, this.missionsExecutor.getState()]);
+      this.emit("state", [data, this.missionsExecutor.getState()])
     }
+  }
+
+  private emit(event: DroneEvent, data: any) {
+    EventPublisher.emit(event, data)
   }
 }

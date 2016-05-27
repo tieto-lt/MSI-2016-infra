@@ -2,17 +2,26 @@
  *  Command models
  */
 
-export type PayloadType = "DirectCommand" | "MissionPlan" | "OperatorState"
+export type PayloadType = "DirectCommand" | "MissionPlan" | "OperatorState" | "Image"
 
 export interface ControlPayload {
   payloadType: PayloadType
 }
+
+/**
+ * Image payload
+ */
+export class Image implements ControlPayload {
+  payloadType: PayloadType = "Image"
+  constructor(public imageBase64: string) {}
+}
+
 /**
  * Direct drone commands for controllign drone in real time
  */
 export type CommandType = "takeoff" | "land" | "stop" | "up" | "down" | "front" | "back" |
     "left" | "right" | "clockwise" | "counterClockwise" | "horizontalCamera" | "verticalCamera" |
-    "disableEmergency" | "calibrate"
+    "disableEmergency" | "calibrate" | "takePicture"
 
 export class DirectCommand implements ControlPayload {
 
@@ -31,7 +40,7 @@ export class Move extends DirectCommand {
  */
 //TODO think about mission task
 export type MissionCommandType = "takeoff" | "altitude" | "cw" | "ccw" | "hover" | "go" | "zero" | "wait"
-  | "forward" | "backward" | "left" | "right" | "up" | "down"
+  | "forward" | "backward" | "left" | "right" | "up" | "down" | "takePicture"
 
 export class MissionPlan implements ControlPayload {
   payloadType: PayloadType = "MissionPlan"

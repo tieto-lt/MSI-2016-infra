@@ -2,8 +2,10 @@ import { Control } from './control'
 import { Constants } from './constants';
 import { Drone } from './drone'
 import { OperatorState } from './models/operator_state';
-import { DirectCommand, CommandType, Move, MissionCommand, MissionState, ControlPayload, MissionPlan } from './models/commands';
+import { DirectCommand, CommandType, Move, MissionCommand, MissionState, ControlPayload, MissionPlan, Image } from './models/commands';
 import * as ds from './models/drone_state'
+import { EventPublisher } from './event_publisher';
+
 var WebSocket = require('ws')
 
 export class Operator {
@@ -17,21 +19,22 @@ export class Operator {
     this.externalControl = new Control(cmd => this.onPayloadReceived(cmd))
     this.internalControl = new Control(cmd => this.onPayloadReceived(cmd))
 
-    this.drone = new Drone(
-      state => this.onDroneStateUpdate(state),
-      frame => this.onDroneVideoFrame(frame))
+    this.drone = new Drone()
+    this.drone.onEvent("state", state => this.onDroneStateUpdate(state))
+    this.drone.onEvent("video", frame => this.onDroneVideoFrame(frame))
+    this.drone.onEvent("error", err => this.updateOperatorState(state => {
+      console.log("Drone ERROR", err)
+      state.setError(err.message)
+      state.isDroneReady = false
+    }))
+    EventPublisher.onEvent("sendPicture", () => this.sendPicture())
     this.operatorState = OperatorState.initialized(operatorToken)
   }
 
   droneConnect() {
     //second connect fucks up video stream TODO
-    this.drone.connect(err => {
-      this.updateOperatorState(state => {
-        console.log(err)
-        state.setError(err.message)
-        state.isDroneReady = false
-      })
-    });
+    this.drone.connect();
+    this.operatorState.isDroneReady = true
   }
 
   connectExternalControl(callback: (state: OperatorState) => any) {
@@ -85,12 +88,23 @@ export class Operator {
 
   private onPayloadReceived(payload: ControlPayload) {
     if (payload.payloadType === "DirectCommand") {
-      this.drone.sendCommand(<DirectCommand>payload)
+      let command = <DirectCommand>payload
+      if (command.commandType === "takePicture") {
+        this.sendPicture()
+      } else {
+        this.drone.sendCommand(<DirectCommand>payload)
+      }
     } else if (payload.payloadType === "MissionPlan") {
       this.runMission((<MissionPlan>payload).commands)
     } else {
       this.updateOperatorState(state => state.setError("Unsupported command received"))
     }
+  }
+
+  private sendPicture() {
+    let image = this.drone.getCurrentImage()
+    this.externalControl.sendControlPayload(image)
+    this.internalControl.sendControlPayload(image)
   }
 
   private onDroneStateUpdate(droneState: [ds.NavData, MissionState]) {
@@ -110,8 +124,8 @@ export class Operator {
     let state = this.operatorState.copy()
     updater(state)
     let cp = state.copy()
-    this.internalControl.sendState(cp)
-    this.externalControl.sendState(cp)
+    this.internalControl.sendControlPayload(cp)
+    this.externalControl.sendControlPayload(cp)
     this.operatorState = state
   }
 }

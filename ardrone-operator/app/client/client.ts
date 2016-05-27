@@ -29,55 +29,52 @@ class OperatorClient {
     $("#drone-speed").val(0.1)
     $("#drone-disable-emergency").click(() => this.sendCommandForDrone("disableEmergency", null))
     $("#drone-calibrate").click(() => this.sendCommandForDrone("calibrate", null))
+    $("#drone-take-picture").click(() => this.sendCommandForDrone("takePicture", null))
     $(document).keydown(e => this.onKeyDown(e));
     $(document).keyup(e => this.onKeyUp(e));
 
     this.ws = new WebSocket("ws://localhost:8000/ws/api")
     this.ws.onmessage = (ev) => {
-      let operatorState = JSON.parse(ev.data)
-      let droneState = operatorState.droneState && operatorState.droneState.droneState || {}
-      let demo = droneState.demo || { velocity: {}}
-
-      let droneStateSummary = {
-        state: operatorState.state,
-        token: operatorState.operatorToken,
-        externalCtrl: operatorState.externalControlState,
-        isDroneReady: operatorState.isDroneReady,
-        missionState: operatorState.missionState,
-        battery: demo.batteryPercentage,
-        altitude: demo.altitude,
-        ctrlState: demo.controlState,
-        flyState: demo.flyState,
-        emergency: droneState.emergencyLanding
+      let dataObj = JSON.parse(ev.data)
+      if (dataObj.payloadType === "OperatorState") {
+        this.onOperatorStateUpdate(dataObj)
+      } else if (dataObj.payloadType === "Image") {
+        this.onImageUpdate(dataObj)
       }
-      let selectedState = {
-        demo: {
-          controlState: demo.controlState,
-          flyState: demo.flyState,
-          batteryPercentage: demo.batteryPercentage,
-          altitude: demo.altitude,
-          altitudeMeters: demo.altitudeMeters,
-          velocity: {
-            x: demo.velocity.x,
-            y: demo.velocity.y,
-            z: demo.velocity.z,
-          },
-          xVelocity: demo.xVelocity,
-          yVelocity: demo.yVelocity,
-          zVelocity: demo.zVelocity
-        }
-      }
-      if (operatorState.error) {
-        $('#error-placeholder').text(operatorState.error)
-        $('#error-placeholder').show()
-        $('#ok-placeholder').hide()
-      } else {
-        $('#error-placeholder').hide()
-        $('#ok-placeholder').show()
-      }
-      $("#summary_navdata").text(JSON.stringify(droneStateSummary, null, 2))
-      $("#navdata").text(JSON.stringify(operatorState, null, 2))
     }
+  }
+
+  onImageUpdate(image) {
+    let imageBase64 = image.imageBase64
+    $("#pngStream").attr("src", `data:image/png;base64,${imageBase64}`);
+  }
+
+  onOperatorStateUpdate(operatorState) {
+    let droneState = operatorState.droneState && operatorState.droneState.droneState || {}
+    let demo = operatorState.droneState && operatorState.droneState.demo || { velocity: {}}
+
+    let droneStateSummary = {
+      state: operatorState.state,
+      token: operatorState.operatorToken,
+      externalCtrl: operatorState.externalControlState,
+      isDroneReady: operatorState.isDroneReady,
+      missionState: operatorState.missionState,
+      battery: demo.batteryPercentage,
+      altitude: demo.altitude,
+      ctrlState: demo.controlState,
+      flyState: demo.flyState,
+      emergency: droneState.emergencyLanding
+    }
+    if (operatorState.error) {
+      $('#error-placeholder').text(operatorState.error)
+      $('#error-placeholder').show()
+      $('#ok-placeholder').hide()
+    } else {
+      $('#error-placeholder').hide()
+      $('#ok-placeholder').show()
+    }
+    $("#summary_navdata").text(JSON.stringify(droneStateSummary, null, 2))
+    $("#navdata").text(JSON.stringify(operatorState, null, 2))
   }
 
   onKeyUp(e) {

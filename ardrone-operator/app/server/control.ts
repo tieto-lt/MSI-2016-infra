@@ -35,9 +35,9 @@ export class Control {
     }
   }
 
-  sendState(state: OperatorState) {
+  sendControlPayload(payload: ControlPayload) {
     if (this.isWsOpen(this.controlWs)) {
-      this.controlWs.send(JSON.stringify(state));
+      this.controlWs.send(JSON.stringify(payload));
     }
   }
 

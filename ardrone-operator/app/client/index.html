@@ -16,12 +16,13 @@
         <div id="ok-placeholder" class="alert alert-success" role="alert">Everything seems OK</div>
         <div id="error-placeholder" class="alert alert-danger" role="alert" style="display: none">Boom</div>
         <div class="row">
-          <div class="col-lg-6">
+          <div class="col-lg-7">
             <div class="btn-group">
               <button id="drone-connect" type="button" class="btn btn-default">Drone Connect</button>
               <button id="control-connect" type="button" class="btn btn-default">Control Connect</button>
               <button id="drone-disable-emergency" type="button" class="btn btn-default">Disable emergency</button>
               <button id="drone-calibrate" type="button" class="btn btn-default">Calibrate</button>
+              <button id="drone-take-picture" type="button" class="btn btn-default">Take picture</button>
             </div>
           </div>
           <div class="col-xs-1">
@@ -32,6 +33,9 @@
           <pre class="col-md-4" id="summary_navdata"></pre>
           <div class="col-md-8" id="droneStream"></div>
         </p>
+        <div class="row col-lg-12">
+          <img id="pngStream" src="" alt="Latest taken picture" height="100px">
+        </div>
         <div class="row col-lg-12">
           <p>
             <pre id="navdata"></pre>
