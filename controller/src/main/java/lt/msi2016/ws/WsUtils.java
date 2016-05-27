@@ -1,4 +1,4 @@
-package lt.msi2016.internal.controller.ws;
+package lt.msi2016.ws;
 
 
 import org.springframework.web.socket.WebSocketSession;

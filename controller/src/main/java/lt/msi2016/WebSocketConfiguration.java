@@ -1,8 +1,8 @@
 package lt.msi2016;
 
 
-import lt.msi2016.internal.controller.CommandsWsHandler;
-import lt.msi2016.internal.controller.VideoStreamWsHandler;
+import lt.msi2016.integration.CommandsWsHandler;
+import lt.msi2016.integration.VideoStreamWsHandler;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

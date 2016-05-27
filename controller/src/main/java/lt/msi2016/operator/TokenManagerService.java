@@ -1,4 +1,4 @@
-package lt.msi2016.internal.controller;
+package lt.msi2016.operator;
 
 import org.springframework.stereotype.Service;
 

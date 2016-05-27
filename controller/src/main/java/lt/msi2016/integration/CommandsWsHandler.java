@@ -1,10 +1,13 @@
-package lt.msi2016.internal.controller;
+package lt.msi2016.integration;
 
 
-import lt.msi2016.internal.controller.ws.WsUtils;
+import lt.msi2016.operator.OperatorsRegistry;
+import lt.msi2016.ws.WsUtils;
+import lt.msi2016.operator.model.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PongMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,14 +23,16 @@ public class CommandsWsHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String operatorToken = WsUtils.getOperatorToken(session);
-        operatorsRegistry.registerOperatorSession(operatorToken, session);
+        Operator operator = operatorsRegistry.registerOperator(operatorToken, session);
+        // TODO: this not belongs here.
+        // Operators now are controlled only by connection establishment an closing. Later User should pick drone by himself;
+        operator.bookDrone("123");
+
         LOG.info("Got connection from {}, {}", operatorToken, session.getUri());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String operatorToken = WsUtils.getOperatorToken(session);
-//        LOG.info("Received message {}: {}", operatorToken, message);
         super.handleTextMessage(session, message);
     }
 
@@ -37,5 +42,11 @@ public class CommandsWsHandler extends TextWebSocketHandler {
         LOG.info("Received pong message from {}", operatorToken);
         operatorsRegistry.operatorHeartbeat(operatorToken);
         super.handlePongMessage(session, message);
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        String operatorToken = WsUtils.getOperatorToken(session);
+        super.afterConnectionClosed(session, status);
     }
 }
