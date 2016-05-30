@@ -1,0 +1,1 @@
+module = require('main_module');
