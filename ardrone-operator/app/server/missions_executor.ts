@@ -3,7 +3,7 @@ let arDroneConstants = require('ar-drone/lib/constants');
 let autonomy = require('ardrone-autonomy');
 import { EventPublisher } from './event_publisher';
 
-export type MissionEvent = "sendPicture"
+export type MissionEvent = "MissionPicture"
 
 export class MissionsExecutor {
 
@@ -61,7 +61,7 @@ export class MissionsExecutor {
     var mission  = this.createMission();
     commands.forEach(c => {
       if (c.commandType === "takePicture") {
-        mission.taskSync(() => this.emit("sendPicture"))
+        mission.taskSync(() => this.emit("MissionPicture"))
       } else {
         let cmdFn = mission[c.commandType]
         if (cmdFn) {

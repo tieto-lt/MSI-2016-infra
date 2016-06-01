@@ -5,6 +5,7 @@ import { OperatorState } from './models/operator_state';
 import { DirectCommand, CommandType, Move, MissionCommand, MissionState, ControlPayload, MissionPlan, Image } from './models/commands';
 import * as ds from './models/drone_state'
 import { EventPublisher } from './event_publisher';
+import { MissionCapture } from './mission_capture';
 
 var WebSocket = require('ws')
 
@@ -27,7 +28,7 @@ export class Operator {
       state.setError(err.message)
       state.isDroneReady = false
     }))
-    EventPublisher.onEvent("sendPicture", () => this.sendPicture())
+    EventPublisher.onEvent("MissionPicture", () => this.sendPicture())
     this.operatorState = OperatorState.initialized(operatorToken)
   }
 
@@ -78,10 +79,14 @@ export class Operator {
     this.operatorState = OperatorState.initialized(this.operatorToken)
   }
 
-  runMission(commands: Array<MissionCommand>): MissionState {
+  runMission(missionPlan: MissionPlan): MissionState {
+    let missionCapture = new MissionCapture(missionPlan.missionId)
     let missionState = this.drone.runMission(
-      commands,
-      mstate => this.updateOperatorState(ostate => ostate.missionState = mstate))
+      missionPlan.commands,
+      mstate => {
+        missionCapture.finish(() =>
+          this.updateOperatorState(ostate => ostate.missionState = mstate))
+      })
     this.updateOperatorState(state => state.missionState = missionState)
     return missionState
   }
@@ -95,7 +100,7 @@ export class Operator {
         this.drone.sendCommand(<DirectCommand>payload)
       }
     } else if (payload.payloadType === "MissionPlan") {
-      this.runMission((<MissionPlan>payload).commands)
+      this.runMission((<MissionPlan>payload))
     } else {
       this.updateOperatorState(state => state.setError("Unsupported command received"))
     }
@@ -105,6 +110,7 @@ export class Operator {
     let image = this.drone.getCurrentImage()
     this.externalControl.sendControlPayload(image)
     this.internalControl.sendControlPayload(image)
+    EventPublisher.emit("PictureTaken", image)
   }
 
   private onDroneStateUpdate(droneState: [ds.NavData, MissionState]) {

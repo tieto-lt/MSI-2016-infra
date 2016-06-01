@@ -1,4 +1,21 @@
 
+import { Image } from './commands'
+
+export class MissionResult {
+  public missionId: string;
+  public navigationData: Array<MissionState>;
+  public images: Array<Image>;
+  public videoBase64;
+}
+
+export class MissionState {
+  public x: number
+  public y: number
+  public z: number
+  public altitude: number
+  public altitudeMeters: number
+}
+
 export class NavData {
   public droneState: DroneState
   public demo: DroneDemoState

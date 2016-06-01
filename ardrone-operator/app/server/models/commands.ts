@@ -45,7 +45,7 @@ export type MissionCommandType = "takeoff" | "altitude" | "cw" | "ccw" | "hover"
 export class MissionPlan implements ControlPayload {
   payloadType: PayloadType = "MissionPlan"
 
-  constructor(public commands: MissionCommand[]) {}
+  constructor(public missionId: string, public commands: MissionCommand[]) {}
 }
 
 export class MissionCommand {

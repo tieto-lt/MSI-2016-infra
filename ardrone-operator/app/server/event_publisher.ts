@@ -15,4 +15,8 @@ export class EventPublisher {
   static emitNoData(event: string) {
     EventPublisher.emit(event, undefined)
   }
+
+  static unsubscribe(event, callback) {
+    this.eventEmitter.removeListener(event, callback)
+  }
 }

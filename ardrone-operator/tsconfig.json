@@ -28,6 +28,7 @@
     "app/server/control.ts",
     "app/server/drone.ts",
     "app/server/event_publisher.ts",
+    "app/server/mission_capture.ts",
     "app/server/missions_executor.ts",
     "app/server/models/commands.ts",
     "app/server/models/drone_state.ts",
