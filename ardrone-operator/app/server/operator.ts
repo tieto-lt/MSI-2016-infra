@@ -50,17 +50,17 @@ export class Operator {
         this.updateOperatorState(state => {
           state.externalControlState.isVideoUp = false
           state.setError("Can't connect to external control video socket")
-        })
-      })
+        });
+      });
       videoWs.on('open', () => this.updateOperatorState(state => state.externalControlState.isVideoUp = true))
-    })
+    });
     controlWs.on('error', err => {
       console.log("Failed to connect to external control", err)
       this.updateOperatorState( state => {
         state.externalControlState.isControlUp = false
         state.setError("Can't connect to external control socket")
       })
-    })
+    });
     callback(this.operatorState);
   }
 
