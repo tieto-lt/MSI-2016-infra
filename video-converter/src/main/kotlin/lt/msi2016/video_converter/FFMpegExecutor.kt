@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.File
 import java.io.InputStream
+import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -26,7 +27,8 @@ class FFMpegExecutor {
 
     fun convertToMp4(video: ByteArray): ByteArray {
 
-        val fileName = "${converterSettings.tmpFolder}/out.mp4"
+        val uuid = UUID.randomUUID().toString()
+        val fileName = "${converterSettings.tmpFolder}/$uuid.mp4"
         val runtime = Runtime.getRuntime();
         val osCommand = converterSettings.ffmpegCommand.format(fileName)
         LOG.info("Executing {}", osCommand)
