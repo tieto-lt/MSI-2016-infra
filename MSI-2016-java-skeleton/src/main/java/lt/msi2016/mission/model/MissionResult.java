@@ -11,7 +11,7 @@ import lombok.ToString;
 
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(exclude= { "navigationData", "images", "videoBase64" })
 public class MissionResult {

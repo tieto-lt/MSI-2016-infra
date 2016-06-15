@@ -1,23 +1,30 @@
 package lt.msi2016.operator_mock
 
-import lt.msi2016.operator_mock.models.TokenRequest
-import lt.msi2016.operator_mock.models.TokenResponse
+import lt.msi2016.operator_mock.models.Control
+import lt.msi2016.operator_mock.models.ErrorResponse
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
-import java.util.*
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
-class UiApi @Autowired constructor(val controlsRegistry: ControlsRegistry) {
+class UiRestApi @Autowired constructor(val controlService: ControlService) {
 
-    @RequestMapping("/token", method = arrayOf(RequestMethod.POST))
-    fun newMockSession(@RequestBody token: TokenRequest): TokenResponse {
-        val uuid = controlsRegistry.addControl(token.accessToken, token.controlHostname);
+    companion object {
+        private val LOG = LoggerFactory.getLogger(javaClass)
+    }
 
-        // schedule missions retriever
-        return TokenResponse(uuid);
+    @RequestMapping("/control", method = arrayOf(RequestMethod.POST))
+    fun newMockSession(@RequestBody control: Control): Control {
+        controlService.callControl(control)
+        return control
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception::class)
+    fun onError(ex: Exception): ErrorResponse {
+        LOG.error("", ex)
+        return ErrorResponse(ex.message);
     }
 }

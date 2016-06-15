@@ -1,0 +1,281 @@
+{
+  "state": "Initialized",
+  "operatorToken": "dummy",
+  "externalControlState": {
+    "isControlUp": true,
+    "isVideoUp": false
+  },
+  "isDroneReady": true,
+  "missionState": {
+    "isMissionInProgress": false
+  },
+  "droneState": {
+    "header": 1432778632,
+    "droneState": {
+      "flying": 0,
+      "videoEnabled": 0,
+      "visionEnabled": 0,
+      "controlAlgorithm": 0,
+      "altitudeControlAlgorithm": 1,
+      "startButtonState": 0,
+      "controlCommandAck": 0,
+      "cameraReady": 1,
+      "travellingEnabled": 0,
+      "usbReady": 0,
+      "navdataDemo": 1,
+      "navdataBootstrap": 0,
+      "motorProblem": 0,
+      "communicationLost": 0,
+      "softwareFault": 0,
+      "lowBattery": 0,
+      "userEmergencyLanding": 0,
+      "timerElapsed": 0,
+      "MagnometerNeedsCalibration": 0,
+      "anglesOutOfRange": 0,
+      "tooMuchWind": 0,
+      "ultrasonicSensorDeaf": 0,
+      "cutoutDetected": 0,
+      "picVersionNumberOk": 1,
+      "atCodecThreadOn": 1,
+      "navdataThreadOn": 1,
+      "videoThreadOn": 1,
+      "acquisitionThreadOn": 1,
+      "controlWatchdogDelay": 0,
+      "adcWatchdogDelay": 0,
+      "comWatchdogProblem": 0,
+      "emergencyLanding": 0
+    },
+    "sequenceNumber": 4155,
+    "visionFlag": 0,
+    "demo": {
+      "controlState": "CTRL_LANDED",
+      "flyState": "FLYING_OK",
+      "batteryPercentage": 34,
+      "rotation": {
+        "frontBack": 0.723,
+        "pitch": 0.723,
+        "theta": 0.723,
+        "y": 0.723,
+        "leftRight": -0.707,
+        "roll": -0.707,
+        "phi": -0.707,
+        "x": -0.707,
+        "clockwise": 5.348,
+        "yaw": 5.348,
+        "psi": 5.348,
+        "z": 5.348
+      },
+      "frontBackDegrees": 0.723,
+      "leftRightDegrees": -0.707,
+      "clockwiseDegrees": 5.348,
+      "altitude": 0,
+      "altitudeMeters": 0,
+      "velocity": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "xVelocity": 0,
+      "yVelocity": 0,
+      "zVelocity": 0,
+      "frameIndex": 0,
+      "detection": {
+        "camera": {
+          "rotation": {
+            "m11": 0,
+            "m12": 0,
+            "m13": 0,
+            "m21": 0,
+            "m22": 0,
+            "m23": 0,
+            "m31": 0,
+            "m32": 0,
+            "m33": 0
+          },
+          "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "type": 12
+        },
+        "tagIndex": 0
+      },
+      "drone": {
+        "camera": {
+          "rotation": {
+            "m11": 0.9955661296844482,
+            "m12": -0.09336928278207779,
+            "m13": 0.01141209527850151,
+            "m21": 0.09321387857198715,
+            "m22": 0.99555504322052,
+            "m23": 0.013466475531458855,
+            "m31": -0.012618724256753922,
+            "m32": -0.012343000620603561,
+            "m33": 0.9998441934585571
+          },
+          "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      }
+    },
+    "visionDetect": {
+      "nbDetected": 0,
+      "type": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "xc": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "yc": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "width": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "height": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "dist": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "orientationAngle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        {
+          "m11": 0,
+          "m12": 0,
+          "m13": 0,
+          "	m21": 0,
+          "m22": 0,
+          "m23": 0,
+          "m31": 0,
+          "m32": 0,
+          "m33": 0
+        },
+        {
+          "m11": 0,
+          "m12": 0,
+          "m13": 0,
+          "m21": 0,
+          "m22": 0,
+          "m23": 0,
+          "m31": 0,
+          "m32": 0,
+          "m33": 0
+        },
+        {
+          "m11": 0,
+          "m12": 0,
+          "m13": 0,
+          "m21": 0,
+          "m22": 0,
+          "m23": 0,
+          "m31": 0,
+          "m32": 0,
+          "m33": 0
+        },
+        {
+          "m11": 0,
+          "m12": 0,
+          "m13": 0,
+          "m21": 0,
+          "m22": 0,
+          "m23": 0,
+          "m31": 0,
+          "m32": 0,
+          "m33": 0
+        }
+      ],
+      "translation": [
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      ],
+      "ca	meraSource": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "magneto": {
+      "mx": -4,
+      "my": -70,
+      "mz": -148,
+      "raw": {
+        "x": 241.9921875,
+        "y": 13.78125,
+        "z": 530.71875
+      },
+      "rectified": {
+        "x": 23.59283447265625,
+        "y": -89.2939224243164,
+        "z": 530.71875
+      },
+      "		offset": {
+        "x": 218.39935302734375,
+        "y": 103.0751724243164,
+        "z": 0
+      },
+      "heading": {
+        "unwrapped": 0,
+        "gyroUnwrapped": 0,
+        "fusionUnwrapped": 5.348955154418945
+      },
+      "ok": 1,
+      "state": 2,
+      "radius": 140.3113555908203,
+      "error": {
+        "mean": -44.097618103027344,
+        "variance": 77.179443359375
+      }
+    },
+    "wifi": {
+      "linkQuality": 1
+    }
+  },
+  "payloadType": "OperatorState"
+}
