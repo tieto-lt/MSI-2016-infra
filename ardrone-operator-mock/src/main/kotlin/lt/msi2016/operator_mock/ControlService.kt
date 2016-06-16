@@ -23,7 +23,8 @@ class ControlService @Autowired constructor(
         private val LOG = LoggerFactory.getLogger(javaClass)
     }
 
-    fun callControl(control: Control) {
+    fun callControl(control: Control, delayOption: Int?) {
+        val delay = delayOption ?: getRandomDelay();
         val hostname = control.hostName
         val token = control.token
         val executor = Executors.newFixedThreadPool(10)
@@ -41,7 +42,7 @@ class ControlService @Autowired constructor(
         })
 
         firstMission.map {
-            randomDelay()
+            sleep(delay)
             val missionId = it.missionId
             restConnector.missionComplete(hostname, missionId, getMissionResultJson(missionId))
         }
@@ -83,13 +84,15 @@ class ControlService @Autowired constructor(
         return Resources.toByteArray(url)
     }
 
-    private fun randomDelay() {
-        val delay = Random().nextInt(60000)
-        println(delay)
+    private fun sleep(delay: Int) {
         try {
             Thread.sleep(delay.toLong())
         } catch(e: InterruptedException) {
         }
+    }
+
+    private fun getRandomDelay(): Int {
+        return Random().nextInt(60000)
     }
 }
 

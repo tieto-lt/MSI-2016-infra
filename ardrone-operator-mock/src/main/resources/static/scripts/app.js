@@ -9,17 +9,24 @@ function hideNotifications() {
 
 function mockOperator(ev) {
     var hostname = $("#hostname-input").val();
+    var delay = $("#delay-input").val();
     var requestBody = {
         "hostName": hostname,
         "token": $("#token-input").val()
     };
     var loadingIcon =  $("#loading-icon");
     loadingIcon.show();
+    var url = '/control';
+    console.log(delay);
+    if (delay && delay > 0) {
+        url += "?delay=" + delay * 1000;
+    }
+
     $.ajax({
         contentType: 'application/json',
         data: JSON.stringify(requestBody),
         success: function(data){
-            var successNotification = $("#error-notification");
+            var successNotification = $("#success-notification");
             successNotification.show();
             successNotification.text("Completed!");
             loadingIcon.hide();
@@ -32,7 +39,7 @@ function mockOperator(ev) {
         },
         processData: false,
         type: 'POST',
-        url: '/control'
+        url: url
     });
     $("#loading-icon").addClass("spinning");
     ev.preventDefault();

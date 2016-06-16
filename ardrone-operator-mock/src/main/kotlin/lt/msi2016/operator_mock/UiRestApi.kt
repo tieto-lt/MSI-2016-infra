@@ -16,8 +16,8 @@ class UiRestApi @Autowired constructor(val controlService: ControlService) {
     }
 
     @RequestMapping("/control", method = arrayOf(RequestMethod.POST))
-    fun newMockSession(@RequestBody control: Control): Control {
-        controlService.callControl(control)
+    fun newMockSession(@RequestBody control: Control, @RequestParam("delay", required = false) delay: Int?): Control {
+        controlService.callControl(control, delay)
         return control
     }
 
