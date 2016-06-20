@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lt.msi2016.mission.model.Mission;
 import lt.msi2016.mission.model.MissionCommand;
 import lt.msi2016.mission.model.MissionResult;
+import lt.msi2016.mission.model.Missions;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
@@ -28,13 +29,13 @@ public class MissionController {
     ObjectMapper mapper;
 
     @RequestMapping(method = RequestMethod.GET, value = "/api/missions")
-    public List<Mission> getMissions() {
+    public Missions getMissions() {
         List<Mission> mockMissions = new ArrayList<>();
         List<MissionCommand> commands = new ArrayList<>();
         commands.add(MissionCommand.builder().commandType("takeOff").build());
         commands.add(MissionCommand.builder().commandType("land").build());
         mockMissions.add(Mission.builder().missionId("test1").commands(commands).build());
-        return mockMissions;
+        return Missions.builder().missions(mockMissions).build();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}/data")
