@@ -28,8 +28,14 @@ class RestConnector @Autowired constructor(private val restTemplate: RestTemplat
         return Optional.ofNullable(response.missions.firstOrNull());
     }
 
+    fun reserveMission(hostname: String, missionId: String): MissionPlan {
+        val uri = "http://$hostname/api/missions/$missionId/reserve"
+        val response = restTemplate.postForObject(uri, null, MissionPlan::class.java);
+        return response;
+    }
+
     fun missionComplete(hostname: String, missionId: String, json: JsonNode) {
-        val uri = "http://$hostname/api/missions/$missionId/data"
+        val uri = "http://$hostname/api/missions/$missionId"
         restTemplate.postForObject(uri, json, Void::class.java)
     }
 }

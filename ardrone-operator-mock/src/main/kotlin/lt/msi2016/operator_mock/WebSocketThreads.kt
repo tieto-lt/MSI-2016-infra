@@ -52,6 +52,7 @@ class CommandWsThreads(
                 sleep()
             }
             session.sendMessage(imageMessage)
+            sleep(200)
         }
     }
 

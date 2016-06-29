@@ -22,6 +22,7 @@ public class CommandsWsHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        session.setTextMessageSizeLimit(1000000);
         String operatorToken = WsUtils.getOperatorToken(session);
         Operator operator = operatorsRegistry.registerOperator(operatorToken, session);
         // TODO: this not belongs here.
@@ -33,6 +34,7 @@ public class CommandsWsHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        LOG.info("Received operator state length {}", message.getPayload().length());
         super.handleTextMessage(session, message);
     }
 
