@@ -122,10 +122,24 @@
 
         <!-- Video decoding -->
         <dependency>
-            <groupId>com.googlecode.mp4parser</groupId>
+            <groupId>org.mp4parser</groupId>
             <artifactId>isoparser</artifactId>
-            <version>1.1.7</version>
+            <version>1.9.27</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.mp4parser</groupId>
+            <artifactId>muxer</artifactId>
+            <version>1.9.27</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mp4parser</groupId>
+            <artifactId>streaming</artifactId>
+            <version>1.9.27</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>

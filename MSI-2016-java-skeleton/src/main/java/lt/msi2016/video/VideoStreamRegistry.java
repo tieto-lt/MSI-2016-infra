@@ -1,18 +1,16 @@
 package lt.msi2016.video;
 
-import com.coremedia.iso.boxes.Container;
-import com.googlecode.mp4parser.MemoryDataSourceImpl;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.tracks.h264.H264TrackImpl;
 import lt.msi2016.operator.OperatorsRegistry;
+import org.mp4parser.Container;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +24,9 @@ public class VideoStreamRegistry {
 
     @Autowired
     private OperatorsRegistry operatorsRegistry;
+
+    @Autowired
+    private VideoConverterService videoConverterService;
 
     private static Logger LOG = LoggerFactory.getLogger(VideoStreamRegistry.class);
 
@@ -49,22 +50,48 @@ public class VideoStreamRegistry {
         List<ByteBuffer> byteBuffersList = recordingVideos.get(operatorToken);
 
         ByteBuffer byteBuffer = concatBuffers(byteBuffersList);
-        MemoryDataSourceImpl memoryDataSource = new MemoryDataSourceImpl(byteBuffer);
-        try {
-            H264TrackImpl h264Track = new H264TrackImpl(memoryDataSource);
-            Movie movie = new Movie();
-            movie.addTrack(h264Track);
-            Container container = new DefaultMp4Builder().build(movie);
-            String missionId = operatorsRegistry.getOperatorCurrentMissionId(operatorToken).get();
-            videoStorage.storeVideo(
-                    missionId,
-                    operatorToken,
-                    container);
-            recordingVideos.remove(operatorToken);
-            return container;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to stop recording", e);
+
+        saveTmpFile(byteBuffer);
+
+
+
+        Container container = videoConverterService.convertToMp4VideoContainer(byteBuffer);
+        String missionId = operatorsRegistry.getOperatorCurrentMissionId(operatorToken).get();
+        videoStorage.storeVideo(
+                missionId,
+                operatorToken,
+                container);
+        recordingVideos.remove(operatorToken);
+        return container;
+    }
+
+
+    private void saveTmpFile(ByteBuffer byteBuffer) {
+        ByteBuffer duplicated = byteBuffer.duplicate();
+
+        duplicated.flip();
+        LOG.info("Capacity: {}", duplicated.capacity());
+        LOG.info("Remaining: {}", duplicated.remaining());
+        try (
+            FileOutputStream out = new FileOutputStream("video.h264");
+            FileChannel channel = out.getChannel()) {
+
+            channel.write(duplicated);
+        } catch (IOException ex) {
+            LOG.error("Error wehen save tmp file", ex);
         }
+
+
+
+//        try {
+//            FileChannel out = new FileOutputStream("video.h264").getChannel();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (out != null) out.close();
+//        }
+
+
     }
 
     private ByteBuffer concatBuffers(List<ByteBuffer> buffers) {

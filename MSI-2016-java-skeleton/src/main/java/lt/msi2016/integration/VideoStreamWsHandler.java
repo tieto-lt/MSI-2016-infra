@@ -29,13 +29,11 @@ public class VideoStreamWsHandler extends BinaryWebSocketHandler {
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         LOG.info("Received video bytes: {}", message.getPayloadLength());
 
-        videoRegistry.record(WsUtils.getOperatorToken(session), message.getPayload());
         super.handleBinaryMessage(session, message);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        videoRegistry.stopRecording(WsUtils.getOperatorToken(session)); // TODO: this should be on mission completed.
         super.afterConnectionClosed(session, status);
     }
 }

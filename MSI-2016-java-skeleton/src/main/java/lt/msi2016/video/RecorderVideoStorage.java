@@ -1,7 +1,7 @@
 package lt.msi2016.video;
 
-import com.coremedia.iso.boxes.Container;
 import lt.msi2016.video.model.RecordedVideo;
+import org.mp4parser.Container;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
