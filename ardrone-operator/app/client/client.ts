@@ -40,6 +40,9 @@ class OperatorClient {
         this.onOperatorStateUpdate(dataObj)
       } else if (dataObj.payloadType === "Image") {
         this.onImageUpdate(dataObj)
+      } else if (dataObj.payloadType === "MissionsUpdate") {
+        console.log(dataObj);
+        this.onMissionsUpdate(dataObj)
       }
     }
   }
@@ -75,6 +78,19 @@ class OperatorClient {
     }
     $("#summary_navdata").text(JSON.stringify(droneStateSummary, null, 2))
     $("#navdata").text(JSON.stringify(operatorState, null, 2))
+  }
+
+  onMissionsUpdate(missions) {
+    let html = missions.missions.map((mission) => {
+      return `<tr>
+        <td>${mission.missionId}</td>
+        <td>${mission.submittedBy}</td>
+        <td>${mission.state}</td>
+        <td>${mission.commands.length}</td>
+        <td><button class="btn btn-success">Run</button></td>
+      </tr>`
+    }).join('');
+    $("#missions-table-rows").html(html);
   }
 
   onKeyUp(e) {

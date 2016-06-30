@@ -2,7 +2,7 @@
  *  Command models
  */
 
-export type PayloadType = "DirectCommand" | "MissionPlan" | "OperatorState" | "Image"
+export type PayloadType = "DirectCommand" | "MissionPlan" | "OperatorState" | "Image" | "MissionsUpdate"
 
 export interface ControlPayload {
   payloadType: PayloadType
@@ -73,4 +73,16 @@ export class MissionState {
   static error(error: string): MissionState {
     return new MissionState("error", error)
   }
+}
+
+export class Missions {
+  constructor(public payloadType: PayloadType, public missions: Mission[]) {}
+}
+
+export class Mission {
+  constructor(
+    public missionId: string,
+    public submittedBy: number,
+    public state: string,
+    public commands: MissionCommand[]) {}
 }

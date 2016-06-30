@@ -3,7 +3,11 @@ import { Configuration } from '../config'
 export class Constants {
 
   public static missionFinishedUrl(missionId: string) {
-    return `${Configuration.httpControlUrl}/api/missions/${missionId}/data`
+    return `${Configuration.httpControlUrl}/api/missions/${missionId}`
+  }
+
+  public static retrieveMissionsUrl() {
+    return `${Configuration.httpControlUrl}/api/missions/`
   }
 
   public static wsControlPath(operatorToken: string): string {

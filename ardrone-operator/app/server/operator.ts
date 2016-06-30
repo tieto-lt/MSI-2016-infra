@@ -7,6 +7,7 @@ import * as ds from './models/drone_state'
 import { EventPublisher } from './event_publisher';
 import { MissionCapture } from './mission_capture';
 
+import request = require('request')
 var WebSocket = require('ws')
 
 export class Operator {
@@ -15,6 +16,7 @@ export class Operator {
   private internalControl: Control
   private drone: Drone
   private operatorState: OperatorState
+  private missionRetrieveInterval: NodeJS.Timer;
 
   constructor(private operatorToken: string) {
     this.externalControl = new Control(cmd => this.onPayloadReceived(cmd))
@@ -61,6 +63,16 @@ export class Operator {
         state.setError("Can't connect to external control socket")
       })
     });
+    this.missionRetrieveInterval = setInterval(() => {
+      request.get(
+        Constants.retrieveMissionsUrl(),
+        {},
+        (err, rest, body) => {
+          let json = JSON.parse(body);
+          json.payloadType = "MissionsUpdate";
+          this.internalControl.sendControlPayload(json)
+        });
+    }, 2000);
     callback(this.operatorState);
   }
 
@@ -76,7 +88,8 @@ export class Operator {
     this.drone.close();
     this.externalControl.close();
     this.internalControl.close();
-    this.operatorState = OperatorState.initialized(this.operatorToken)
+    this.operatorState = OperatorState.initialized(this.operatorToken);
+    clearInterval(this.missionRetrieveInterval);
   }
 
   runMission(missionPlan: MissionPlan): MissionState {
