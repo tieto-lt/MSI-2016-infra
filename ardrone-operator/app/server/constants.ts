@@ -10,6 +10,10 @@ export class Constants {
     return `${Configuration.httpControlUrl}/api/missions/`
   }
 
+  public static reserveMissionsUrl(missionId) {
+    return `${Configuration.httpControlUrl}/api/missions/${missionId}/reserve`
+  }
+
   public static wsControlPath(operatorToken: string): string {
     return `${Configuration.wsControlUrl}/ws/api/${operatorToken}`
   }

@@ -27,7 +27,7 @@ public class MissionController {
     private static Mission MOCK_MISSION;
     static {
         List<MissionCommand> commands = new ArrayList<>();
-        commands.add(MissionCommand.builder().commandType("takeOff").build());
+        commands.add(MissionCommand.builder().commandType("takeoff").build());
         commands.add(MissionCommand.builder().commandType("land").build());
         MOCK_MISSION = Mission.builder().missionId("test1").commands(commands).build();
     }
@@ -36,11 +36,15 @@ public class MissionController {
     public Missions getMissions() {
         List<Mission> mockMissions = new ArrayList<>();
         mockMissions.add(MOCK_MISSION);
+        mockMissions.add(MOCK_MISSION);
+        mockMissions.add(MOCK_MISSION);
+        mockMissions.add(MOCK_MISSION);
+        mockMissions.add(MOCK_MISSION);
         return Missions.builder().missions(mockMissions).build();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}/reserve")
-    public Mission reserveMission() {
+    public Mission reserveMission(@PathVariable String missionId) {
         return MOCK_MISSION;
     }
 

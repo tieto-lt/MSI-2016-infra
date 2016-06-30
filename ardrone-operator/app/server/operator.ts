@@ -92,7 +92,22 @@ export class Operator {
     clearInterval(this.missionRetrieveInterval);
   }
 
-  runMission(missionPlan: MissionPlan): MissionState {
+  executeMission(missionPlan: MissionPlan, withReservation: boolean, callback) {
+    if (withReservation) {
+      this.reserveMission(missionPlan, (err) => {
+        console.log("In Callback. " + err);
+        if (err) {
+          callback(err);
+        } else {
+          this.runMission(missionPlan, callback);
+        }
+      })
+    } else {
+      this.runMission(missionPlan, callback);
+    }
+  }
+
+  private runMission(missionPlan: MissionPlan, callback) {
     let missionCapture = new MissionCapture(missionPlan.missionId)
     let missionState = this.drone.runMission(
       missionPlan.commands,
@@ -101,7 +116,15 @@ export class Operator {
           this.updateOperatorState(ostate => ostate.missionState = mstate))
       })
     this.updateOperatorState(state => state.missionState = missionState)
-    return missionState
+    callback(undefined, missionState);
+  }
+
+  private reserveMission(mission: MissionPlan, callback) {
+    request.post(
+      Constants.reserveMissionsUrl(mission.missionId),
+      (err, rest, body) => {
+        callback(err)
+      });
   }
 
   private onPayloadReceived(payload: ControlPayload) {
@@ -113,7 +136,7 @@ export class Operator {
         this.drone.sendCommand(<DirectCommand>payload)
       }
     } else if (payload.payloadType === "MissionPlan") {
-      this.runMission((<MissionPlan>payload))
+      this.executeMission((<MissionPlan>payload), true, () => {})
     } else {
       this.updateOperatorState(state => state.setError("Unsupported command received"))
     }

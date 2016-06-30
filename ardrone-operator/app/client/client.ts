@@ -22,6 +22,7 @@ class OperatorClient {
 
   private ws: WebSocket;
   private keyDowned = false;
+  private missions = [];
 
   constructor() {
     $("#drone-connect").click(() => this.connectDrone())
@@ -45,6 +46,7 @@ class OperatorClient {
         this.onMissionsUpdate(dataObj)
       }
     }
+    this.showSuccess();
   }
 
   onImageUpdate(image) {
@@ -69,28 +71,25 @@ class OperatorClient {
       emergency: droneState.emergencyLanding
     }
     if (operatorState.error) {
-      $('#error-placeholder').text(operatorState.error)
-      $('#error-placeholder').show()
-      $('#ok-placeholder').hide()
-    } else {
-      $('#error-placeholder').hide()
-      $('#ok-placeholder').show()
+      this.showError(operatorState.error);
     }
+
     $("#summary_navdata").text(JSON.stringify(droneStateSummary, null, 2))
     $("#navdata").text(JSON.stringify(operatorState, null, 2))
   }
 
   onMissionsUpdate(missions) {
-    let html = missions.missions.map((mission) => {
+    let html = missions.missions.map((mission, index) => {
       return `<tr>
         <td>${mission.missionId}</td>
         <td>${mission.submittedBy}</td>
         <td>${mission.state}</td>
         <td>${mission.commands.length}</td>
-        <td><button class="btn btn-success">Run</button></td>
+        <td><button class="btn btn-success" onclick="runMission('${index}')">Run</button></td>
       </tr>`
     }).join('');
     $("#missions-table-rows").html(html);
+    this.missions = missions.missions;
   }
 
   onKeyUp(e) {
@@ -199,9 +198,38 @@ class OperatorClient {
     });
   }
 
+  runMission(missionIndex) {
+    let mission = this.missions[missionIndex]
+    let missionId = mission.missionId;
+    $.ajax({
+       url: '/api/mission/',
+       type: 'POST',
+       data: JSON.stringify(mission),
+       contentType: 'application/json',
+       success: () => this.showSuccess("Mission submitted"),
+       error: () => this.showSuccess("Mission submission failed!")
+    });
+  }
+
+  private showError(text: string) {
+    $('#error-placeholder').text(text)
+    $('#error-placeholder').show()
+    $('#ok-placeholder').hide()
+  }
+
+  private showSuccess(text: string = "Everything seems OK") {
+    $('#error-placeholder').hide()
+    $('#ok-placeholder').text(text)
+    $('#ok-placeholder').show()
+  }
+
   private isWsOpen(ws: WebSocket) {
     return ws && ws.readyState === WebSocket.OPEN;
   }
 }
 
-$(document).ready(() => new OperatorClient());
+$(document).ready(
+  () => {
+    let operatorClient = new OperatorClient();
+    window['runMission'] = operatorClient.runMission.bind(operatorClient);
+  });

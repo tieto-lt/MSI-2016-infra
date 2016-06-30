@@ -27,21 +27,27 @@ class Server {
     app.get('/api/connect/drone', (req, res, next) => {
       this.operator.droneConnect();
       res.json({ status: "ok"})
-    })
+    });
 
     app.get('/api/connect/control', (req, res, next) => {
       this.operator.connectExternalControl((body) => res.json(body))
-    })
+    });
 
     app.post('/api/mission', (req, res, next) => {
-      res.json(this.operator.runMission(req.body))
-    })
+      this.operator.executeMission(req.body, !req.query.noReservation, (err, missionState) => {
+        if (err) {
+          next(err);
+        } else {
+          res.json(missionState);
+        }
+      });
+    });
 
     const server = app.listen(Configuration.serverPort, "localhost", () => {
 
-     const {address, port} = server.address();
-     console.log(`Operator HTTP server listening on ${address}:${port}`);
-    })
+      const {address, port} = server.address();
+      console.log(`Operator HTTP server listening on ${address}:${port}`);
+    });
 
     //WS
     const wsServer = new WebSocket.Server({server: server});
