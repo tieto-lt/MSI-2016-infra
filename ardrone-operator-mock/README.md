@@ -14,7 +14,7 @@ $ mvn spring-boot:run
   - Enter token
   - Enter delay in seconds. It shows how many time data is streamed to control app. If delay is 0 random delay between 1 - 60 seconds will be picked up.
 
-Then mock will call controll application. This includes:
+Then mock will call control application. This includes:
   - Missions retrieval from `/api/missions`
   - Subimt mission execution result after delay to `/api/missions/{missionId}/data`
   - Stream mock drone state to `/ws/api/{token}` webSocket
