@@ -56,8 +56,10 @@ export class MissionCapture {
     missionStateMapped.x = missionState.x
     missionStateMapped.y = missionState.y
     missionStateMapped.z = missionState.z
-    missionStateMapped.altitude = droneState.demo.altitude
-    missionStateMapped.altitudeMeters = droneState.demo.altitudeMeters
+    if (droneState && droneState.demo) {
+      missionStateMapped.altitude = droneState.demo.altitude
+      missionStateMapped.altitudeMeters = droneState.demo.altitudeMeters
+    }
     this.navigationData.push(missionStateMapped)
   }
 

@@ -211,6 +211,11 @@ As you can see `commandType` maps directly to the function name from ardrone-aut
 
 Operator custom mission commands that are not present in ardrone-autonomy library
 - **takePicture** - sends picture over the API socket. Refer to `Image` payload documentation. Keep in mind that picture lags for about 3 secs so you should take that into account when planning missions and hover in place for 3 secs before taking a picture.
+- **switchHorizontalCamera** - switches to drone front camera. This camera is used by default.
+- **switchVerticalCamera** - switches drone bottom camera on.
+
+**NOTE:** we cannot stream view from both cameras, so only on stream is available. Although we can switch cameras, but delay time should be considered. So to make it work correctly you should send wait command for around 1 s. between switching camera and taking picture.
+
 
 #### OperatorState
 

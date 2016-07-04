@@ -61,7 +61,11 @@ export class MissionsExecutor {
     var mission  = this.createMission();
     commands.forEach(c => {
       if (c.commandType === "takePicture") {
-        mission.taskSync(() => this.emit("MissionPicture"))
+        mission.taskSync(() => this.emit("MissionPicture"));
+      } else if (c.commandType === "switchHorizontalCamera") {
+        mission.taskSync(() => this.client.config('video:video_channel', 0));
+      } else if (c.commandType === "switchVerticalCamera") {
+        mission.taskSync(() => this.client.config('video:video_channel', 1));
       } else {
         let cmdFn = mission[c.commandType]
         if (cmdFn) {

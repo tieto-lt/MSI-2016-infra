@@ -40,7 +40,8 @@ export class Move extends DirectCommand {
  */
 //TODO think about mission task
 export type MissionCommandType = "takeoff" | "altitude" | "cw" | "ccw" | "hover" | "go" | "zero" | "wait"
-  | "forward" | "backward" | "left" | "right" | "up" | "down" | "takePicture"
+  | "forward" | "backward" | "left" | "right" | "up" | "down"
+  | "takePicture" | "switchVerticalCamera" | "switchHorizontalCamera"
 
 export class MissionPlan implements ControlPayload {
   payloadType: PayloadType = "MissionPlan"

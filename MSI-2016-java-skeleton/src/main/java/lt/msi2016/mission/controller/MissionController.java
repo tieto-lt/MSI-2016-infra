@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @Slf4j
@@ -33,7 +34,18 @@ public class MissionController {
     @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}")
     public void completeMission(@PathVariable String missionId, @RequestBody MissionResult missionResult) throws IOException {
         log.info("Completing mission {} {}", missionId, missionResult);
-        FileCopyUtils.copy(Base64Utils.decodeFromString(missionResult.getVideoBase64()), new File("/tmp/video.h264"));
+        AtomicInteger counter = new AtomicInteger(0);
+        missionResult.getImages().stream()
+            .forEach(img -> base64toFile(img.getImageBase64(), String.format("/tmp/image-%d.png", counter.getAndIncrement())));
+        base64toFile(missionResult.getVideoBase64(), "/tmp/video.h264");
         mapper.writeValue(new File("/tmp/response.json"), missionResult);
+    }
+
+    private void base64toFile(String base64EncodedContent, String fileName) {
+        try {
+            FileCopyUtils.copy(Base64Utils.decodeFromString(base64EncodedContent), new File(fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

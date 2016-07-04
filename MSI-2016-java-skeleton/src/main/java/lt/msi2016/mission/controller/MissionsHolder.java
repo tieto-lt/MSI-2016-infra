@@ -23,6 +23,9 @@ public class MissionsHolder {
         mockMissions.add(mission("5-hover-10sec", command("takeoff"), command("hover", 10000), command("land")));
         mockMissions.add(mission("6-forw-back", command("takeoff"), command("forward", 1),
                 command("hover", 1000), command("backward", 1), command("land")));
+        mockMissions.add(mission("7-take-2-pic", command("wait", 1000),
+                command("switchVerticalCamera"), command("wait", 1000), command("takePicture"),
+                command("switchHorizontalCamera"), command("wait", 1000), command("takePicture"), command("wait", 1000)));
     }
 
     public static Optional<Mission> removeMission(String id) {
