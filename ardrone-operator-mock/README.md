@@ -16,6 +16,7 @@ $ mvn spring-boot:run
 
 Then mock will call control application. This includes:
   - Missions retrieval from `/api/missions`
-  - Subimt mission execution result after delay to `/api/missions/{missionId}/data`
+  - Reserves first mission from retrieved list POST `/api/missions/{missionId}/reserve`
+  - Submit mission execution result after delay to `/api/missions/{missionId}`
   - Stream mock drone state to `/ws/api/{token}` webSocket
   - Stream mock drone video to `/ws/video/{token}` websocket

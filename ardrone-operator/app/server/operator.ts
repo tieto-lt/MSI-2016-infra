@@ -95,7 +95,6 @@ export class Operator {
   executeMission(missionPlan: MissionPlan, withReservation: boolean, callback) {
     if (withReservation) {
       this.reserveMission(missionPlan, (err) => {
-        console.log("In Callback. " + err);
         if (err) {
           callback(err);
         } else {

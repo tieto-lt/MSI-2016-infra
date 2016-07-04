@@ -18,12 +18,106 @@ $ npm install
 $ npm start
 ```
 
+## Configuration
+
+Configuration is stored in `app/config.ts` file. Before starting operator correct control url should be provided.
+
+Config properites:
+  - **serverPort** - port of ardrone-operator
+  - **wsControlUrl** - control app websocket url.
+  - **httpControlUrl** - control app http url
+  - **operatorToken** - token issued from control app. Until not implemented in operator app `dummy` works fine.
+
 # External Control Integration
 
 ## About
 
 Operator can receive commands from external control source. External control host is configured using `config.ts/wsControlUrl` property.
 All communication with external control is being done using Websockets. Control websockets get connected using "Control Connect" button in UI.
+
+## HTTP
+
+### Control app endpoints
+
+Control application (the one which will be implemented during MSI-2016) should expose following endpoints to for operator:
+
+ - `GET` `/api/missions` - should return list of available missions.
+ - `POST` `/api/missions/{missionId}/reserve` - should reserve mission for this operator and make sure that no other operator will take it.
+ - `POST` `/api/missions/{missionId}` - this is callback endpoint for mission completion when mission completed operator will post mission execution details.
+
+### Payload examples
+
+ - `GET` `/api/missions` endpoint should return following structure json:
+ ```json
+ {
+   "missions": [
+     {
+       "missionId": "1-takeoff-land",
+       "submittedBy": null,
+       "state": null,
+       "commands": [
+         {
+           "commandType": "takeoff",
+           "args": null
+         },
+         {
+           "commandType": "land",
+           "args": null
+         }
+       ]
+     },
+     {
+       "missionId": "2-picture",
+       "submittedBy": null,
+       "state": null,
+       "commands": [
+         {
+           "commandType": "wait",
+           "args": [1000]
+         },
+         {
+           "commandType": "takePicture"
+         }
+       ]
+     }
+   ]
+ }
+ ```
+ - `POST` `/api/missions/{missionId}/reserve` -  empty  request body. Should return reserved mission json:
+
+ ```json
+ {
+   "missionId": "2-picture",
+   "submittedBy": null,
+   "state": null,
+   "commands": [
+     {
+       "commandType": "wait",
+       "args": [1000]
+     },
+     {
+       "commandType": "takePicture"
+     }
+   ]
+ }
+ ```
+
+ - `POST` `/api/missions/{missionId}` -  this endpoint received all mission data. Example payload availbale [here](https://raw.githubusercontent.com/tieto-lt/MSI-2016-infra/master/ardrone-operator-mock/src/main/resources/mission_data.json)
+
+ It provides:
+    - images taken during mission `images`
+    - mission video `videoBase64`
+    - drone navigation data during mission `navigationData`
+
+More info about how mission should be constructed under [Mission Plan](##missionplan) section
+
+### Operator workflow
+
+Operator after startup fetches all available missions from control app. URL of control app is taken from `app/cofgig.ts`.
+All available missions are shown in operator UI. When user select mission to run (presses Run button). Operator calls reservation
+endpoint of control app and starts executing mission immediately after success callback. When mission is completed operator callbacks
+control app with mission data. Example [here]
+(https://raw.githubusercontent.com/tieto-lt/MSI-2016-infra/master/ardrone-operator-mock/src/main/resources/mission_data.json)
 
 ## Websockets
 

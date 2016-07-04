@@ -42,7 +42,6 @@ class OperatorClient {
       } else if (dataObj.payloadType === "Image") {
         this.onImageUpdate(dataObj)
       } else if (dataObj.payloadType === "MissionsUpdate") {
-        console.log(dataObj);
         this.onMissionsUpdate(dataObj)
       }
     }
