@@ -4,7 +4,7 @@
 
 ```
 $ npm install -g typescript
-$ npm install -g typings
+$ npm install -g typings@0.8.1
 ```
 
 ## Installing
