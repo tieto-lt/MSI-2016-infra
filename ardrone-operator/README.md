@@ -48,6 +48,7 @@ Control application (the one which will be implemented during MSI-2016) should e
 ### Payload examples
 
  - `GET` `/api/missions` endpoint should return following structure json:
+
  ```json
  {
    "missions": [
