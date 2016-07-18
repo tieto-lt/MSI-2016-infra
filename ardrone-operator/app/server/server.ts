@@ -36,6 +36,7 @@ class Server {
     app.post('/api/mission', (req, res, next) => {
       this.operator.executeMission(req.body, !req.query.noReservation, (err, missionState) => {
         if (err) {
+          console.log(err);
           next(err);
         } else {
           res.json(missionState);

@@ -68,9 +68,19 @@ export class Operator {
         Constants.retrieveMissionsUrl(),
         {},
         (err, rest, body) => {
-          let json = JSON.parse(body);
-          json.payloadType = "MissionsUpdate";
-          this.internalControl.sendControlPayload(json)
+          if (err) {
+            let errorMsg = `Failed 'Get missions' request GET ${Constants.retrieveMissionsUrl()}: ${err.toString()}`
+            console.log(errorMsg)
+            this.updateOperatorState(state => state.setError(errorMsg))
+          } else if (rest.statusCode != 200) {
+            let errorMsg = `Failed 'Get missions' request GET ${Constants.retrieveMissionsUrl()}: status ${rest.statusCode}`
+            console.log(errorMsg)
+            this.updateOperatorState(state => state.setError(errorMsg))
+          } else {
+            let json = JSON.parse(body);
+            json.payloadType = "MissionsUpdate";
+            this.internalControl.sendControlPayload(json)
+          }
         });
     }, 2000);
     callback(this.operatorState);
@@ -111,8 +121,14 @@ export class Operator {
     let missionState = this.drone.runMission(
       missionPlan.commands,
       mstate => {
-        missionCapture.finish(() =>
-          this.updateOperatorState(ostate => ostate.missionState = mstate))
+        missionCapture.finish((err) => {
+          if (err) {
+            console.log(err)
+            this.updateOperatorState(state => state.setError(err))
+          } else {
+            this.updateOperatorState(ostate => ostate.missionState = mstate)
+          }
+        })
       })
     this.updateOperatorState(state => state.missionState = missionState)
     callback(undefined, missionState);
@@ -122,7 +138,13 @@ export class Operator {
     request.post(
       Constants.reserveMissionsUrl(mission.missionId),
       (err, rest, body) => {
-        callback(err)
+        let errorMsg
+        if (err) {
+          errorMsg = `Failed 'Reserve mission' request POST ${Constants.reserveMissionsUrl(mission.missionId)}: ${err.toString()}`
+        } else if (rest.statusCode != 200) {
+          errorMsg = `Failed 'Reserve mission' request POST ${Constants.reserveMissionsUrl(mission.missionId)}: status ${rest.statusCode}`
+        }
+        callback(errorMsg)
       });
   }
 
@@ -135,7 +157,10 @@ export class Operator {
         this.drone.sendCommand(<DirectCommand>payload)
       }
     } else if (payload.payloadType === "MissionPlan") {
-      this.executeMission((<MissionPlan>payload), true, () => {})
+      this.executeMission((<MissionPlan>payload), true, (err) => {
+        console.log(err)
+        this.updateOperatorState(state => state.setError(err))
+      })
     } else {
       this.updateOperatorState(state => state.setError("Unsupported command received"))
     }

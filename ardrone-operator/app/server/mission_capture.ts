@@ -39,11 +39,14 @@ export class MissionCapture {
         json: true
       },
       (err, rest, body) => {
+        let errorMsg;
         if (err) {
-          console.log(`Error when sending mission data to control ${err}`)
+          errorMsg = `Failed 'Finish mission' request POST ${Constants.missionFinishedUrl(this.missionId)}: ${err.toString()}`
+        } else if (rest.statusCode != 200) {
+          errorMsg = `Failed 'Finish mission' request POST ${Constants.missionFinishedUrl(this.missionId)}: status ${rest.statusCode}`
         }
         console.log(`Finished sending mission data to control at ${new Date().toTimeString()}`)
-        callback()
+        callback(errorMsg)
       })
   }
 

@@ -206,7 +206,7 @@ class OperatorClient {
        data: JSON.stringify(mission),
        contentType: 'application/json',
        success: () => this.showSuccess("Mission submitted"),
-       error: () => this.showSuccess("Mission submission failed!")
+       error: (err, rest, body) => this.showError(err.responseText)
     });
   }
 
