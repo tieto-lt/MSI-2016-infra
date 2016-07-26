@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Very simple websocket chat demo</title>
+
+</head>
+<body>
+<h1>Chat Demo</h1>
+
+<form>
+    <lable>Username</lable>
+    <input id="username">
+    <input type="button" value="Connect" onclick="window.connect();">
+</form>
+
+<div style="padding-top: 15px">
+    <textarea id="chat" style="width: 800px; height: 400px">Chat messages when connected</textarea>
+</div>
+
+<div>
+    <lable>Message</lable>
+    <input id="message" style="width: 700px">
+    <input type="submit" value="Send" onclick="window.sendMessage();">
+</div>
+
+<script>
+    var websocket = null;
+
+    window.connect = function() {
+        var username = document.getElementById('username').value;
+        websocket = new WebSocket('ws://' + window.location.host + '/ws/messages/' + username);
+
+        websocket.onopen = function() {
+            document.getElementById("chat").value = '';
+        }
+
+        websocket.onmessage = function(evt) {
+            var payload = JSON.parse(evt.data);
+            var message = '';
+            switch (payload.payloadType) {
+                case 'MemberConnected': message = 'Member ' + payload.username + ' has connected'; break;
+                case 'MemberDisconnected': message = 'Member ' + payload.username + ' has disconnected'; break;
+                case 'MessagePosted': message = payload.username + ': ' + payload.text; break;
+            }
+            document.getElementById("chat").value += message + '\n';
+        }
+    };
+
+    window.sendMessage = function() {
+        if (websocket) {
+            var username = document.getElementById('username').value;
+            var payload = {
+                username: username,
+                text: document.getElementById('message').value
+            };
+            websocket.send(JSON.stringify(payload));
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+.mvn
 node_modules
 build
 npm-debug.log

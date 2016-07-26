@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Websockets</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+        <section data-markdown>
+            ![websockets](gifmachine-2.gif "Comic")
+        </section>
+        <section data-markdown>
+          ### Agenda
+
+          - Http basics
+          - Old way of doing real time apps
+          - How websockets help
+        </section>
+        <section data-markdown>
+          ![httpmodel](HTTP_Model.jpg "Http model")
+        </section>
+        <section data-markdown>
+          ### Example use case - Chat
+
+          - User can join a chat room
+          - User sees all messages in real time in a chat room
+          - User can post message in a chat room
+          - Other users must see message as soon as possible
+        </section>
+        <section data-markdown>
+          ### The Challange
+
+          - Server must serve chat messages update as fast as possible
+          - If you want to have no more then 0.5 sec message delay response from server must be received at least twice per second
+        </section>
+        <section data-markdown>
+          ### Solution - polling
+
+          ![polling](polling.png "Polling")
+        </section>
+        <section data-markdown>
+          ### Solution - polling
+
+          - Ajax request to server at some interval
+          - Many empty requests
+          - **Heavy on network resources**
+          - Half duplex
+        </section>
+        <section data-markdown>
+          ### Solution - long polling
+
+          ![polling](long-polling.png "Polling")
+        </section>
+        <section data-markdown>
+          ### Solution - long polling
+
+          - Client sends Ajax request
+          - Server responds with data when it is available
+          - Timeout can be specified
+          - Half duplex
+          - **Single connection is always reserved**
+        </section>
+        <section data-markdown>
+          ### Solution - HTML5 Server sent events
+
+          ![sse](sse.png "sse")
+        </section>
+        <section data-markdown>
+          ### Solution - HTML5 Server sent events
+
+          - HTTP conneciton persists after receiving response
+          - Connection doesn't timeout - protocol ensures reconnect.
+          - After first request - simplex communication
+          - **Single connection is always reserved for stream**
+        </section>
+        <section data-markdown>
+          ### Http overhead
+
+          - All requests, responses carry headers + cookies
+          - This could add additional 2KB for each request/response
+
+        </section>
+        <section>
+          <h3>Websockets</h3>
+          <img src="websockets.png" style="width: 600px">
+
+        </section>
+        <section data-markdown>
+          ### Websockets
+
+          - only 2 bytes overhead
+          - no polling
+          - no latency
+          - full duplex
+        </section>
+        <section data-markdown>
+          ### Browser support
+
+          ![support](websockets_support.png "sse")
+        </section>
+        <section data-markdown>
+          ### What if not supported?
+
+          - Fallback to previous approaches: polling, long polling, sse
+          - Do it automatically using libraries like [socks-js](https://github.com/sockjs/sockjs-client)
+        </section>
+        <section data-markdown>
+          ### Demo
+        </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
