@@ -85,7 +85,7 @@ Terminal=false
 StartupWMClass=jetbrains-idea-ce
 EOL
 
-desktop-file-install --dir=~/.local/share/applications jetbrains-idea-ce.desktop
+desktop-file-install --dir=$HOME/.local/share/applications jetbrains-idea-ce.desktop
 
 # MAVEN Installation
 
