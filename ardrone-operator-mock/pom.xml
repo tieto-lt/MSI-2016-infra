@@ -24,7 +24,7 @@
     </properties>
 
     <build>
-        <finalName>msi2016</finalName>
+        <finalName>msi2016-ardrone-mock</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
