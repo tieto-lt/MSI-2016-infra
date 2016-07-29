@@ -19,7 +19,7 @@ Change msi2016 to your team name.
 
 ### MySQL workbench.
 
-Open MySQL workbench and setup connection connection to newly created database.
+Open MySQL workbench and setup connection to newly created database.
 
 ## Git setup
 
@@ -30,12 +30,14 @@ To setup git properly follow those steps:
 Precondition:
   - github.com account
 
+
 1. Configure your git identity:
 
 ```
 $ git config --global user.name "Zygimantas Gatelis"
 $ git config --global user.email "zygis.gg@egmail.com"
 ```
+
 2. Setup github
 
 Generate ssh key:
@@ -60,6 +62,7 @@ $ git clone https://github.com/tieto-lt/MSI-2016-JAVA.git
 This repo will be used for lectures.
 
 Setup team repository:
+
 !NOTE: this should be done only from 1 workstation
 
 ```
@@ -104,3 +107,6 @@ Then enable project automatic make, to rebuild project when code changed a.k.a. 
 Find `Make project automatically` option and enable it.
 
 To run project from IDE find main class in project `Application.java`, right click it and select `run`.
+
+Check that application is working:
+http://localhost:8080
