@@ -30,15 +30,14 @@ To setup git properly follow those steps:
 Precondition:
   - github.com account
 
-
-1. Configure your git identity:
+**Configure your git identity:**
 
 ```
 $ git config --global user.name "Zygimantas Gatelis"
 $ git config --global user.email "zygis.gg@egmail.com"
 ```
 
-2. Setup github
+**Setup github**
 
 Generate ssh key:
 ```
@@ -53,7 +52,7 @@ $ cat ~/.ssh/id_rsa.pub
 Add copied key to github.com.
 Use this [link](https://github.com/settings/keys)
 
-3. Clone MSI-2016-JAVA project
+**Clone MSI-2016-JAVA project**
 
 ```
 $ git clone https://github.com/tieto-lt/MSI-2016-JAVA.git
