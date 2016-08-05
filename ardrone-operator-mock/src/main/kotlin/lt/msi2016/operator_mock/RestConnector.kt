@@ -22,20 +22,20 @@ class RestConnector @Autowired constructor(private val restTemplate: RestTemplat
         private val LOG = LoggerFactory.getLogger(javaClass)
     }
 
-    fun getFirstMission(hostname: String): Optional<MissionPlan> {
-        val uri = "http://$hostname/api/missions"
+    fun getFirstMission(hostname: String, token: String): Optional<MissionPlan> {
+        val uri = "http://$hostname/api/missions?operatorToken=$token"
         val response = restTemplate.getForObject(uri, MissionsResponse::class.java);
         return Optional.ofNullable(response.missions.firstOrNull());
     }
 
-    fun reserveMission(hostname: String, missionId: String): MissionPlan {
-        val uri = "http://$hostname/api/missions/$missionId/reserve"
+    fun reserveMission(hostname: String, missionId: String, token: String): MissionPlan {
+        val uri = "http://$hostname/api/missions/$missionId/reserve?operatorToken=$token"
         val response = restTemplate.postForObject(uri, null, MissionPlan::class.java);
         return response;
     }
 
-    fun missionComplete(hostname: String, missionId: String, json: JsonNode) {
-        val uri = "http://$hostname/api/missions/$missionId"
+    fun missionComplete(hostname: String, missionId: String, json: JsonNode, token: String) {
+        val uri = "http://$hostname/api/missions/$missionId?operatorToken=$token"
         restTemplate.postForObject(uri, json, Void::class.java)
     }
 }

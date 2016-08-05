@@ -34,11 +34,11 @@ class ControlService @Autowired constructor(
         var videoWsThread: VideoWsThread? = null;
 
         try {
-            val firstMission = restConnector.getFirstMission(hostname)
+            val firstMission = restConnector.getFirstMission(hostname, token)
             if (!firstMission.isPresent) {
                 return
             }
-            val mission = restConnector.reserveMission(hostname, firstMission.get().missionId)
+            val mission = restConnector.reserveMission(hostname, firstMission.get().missionId, token)
 
             websocketConnector.getCommandWsSession(hostname, token, SuccessCallback {
                 commandWsThread = CommandWsThreads(it, getStateUpdateJson(token), getImageJson())
@@ -51,7 +51,7 @@ class ControlService @Autowired constructor(
 
             sleep(delay)
             val missionId = mission.missionId
-            restConnector.missionComplete(hostname, missionId, getMissionResultJson(missionId))
+            restConnector.missionComplete(hostname, missionId, getMissionResultJson(missionId), token)
         } catch (e: Exception) {
             Throwables.propagate(e);
         } finally {

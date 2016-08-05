@@ -3,15 +3,15 @@ import { Configuration } from '../config'
 export class Constants {
 
   public static missionFinishedUrl(missionId: string) {
-    return `${Configuration.httpControlUrl}/api/missions/${missionId}`
+    return `${Configuration.httpControlUrl}/api/missions/${missionId}?operatorToken=${Configuration.operatorToken}`
   }
 
   public static retrieveMissionsUrl() {
-    return `${Configuration.httpControlUrl}/api/missions/`
+    return `${Configuration.httpControlUrl}/api/missions?operatorToken=${Configuration.operatorToken}`
   }
 
   public static reserveMissionsUrl(missionId) {
-    return `${Configuration.httpControlUrl}/api/missions/${missionId}/reserve`
+    return `${Configuration.httpControlUrl}/api/missions/${missionId}/reserve?operatorToken=${Configuration.operatorToken}`
   }
 
   public static wsControlPath(operatorToken: string): string {

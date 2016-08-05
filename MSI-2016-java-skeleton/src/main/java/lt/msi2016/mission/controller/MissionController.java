@@ -21,18 +21,22 @@ public class MissionController {
     @Autowired
     ObjectMapper mapper;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/missions")
-    public Missions getMissions() {
+    @RequestMapping(method = RequestMethod.GET, value = "/api/missions", params = "operatorToken")
+    public Missions getMissions(@RequestParam String operatorToken) {
+        System.out.println("Getting missions " + operatorToken);
        return Missions.builder().missions(MissionsHolder.getMissions()).build();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}/reserve")
-    public Mission reserveMission(@PathVariable String missionId) {
+    @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}/reserve", params = "operatorToken")
+    public Mission reserveMission(@PathVariable String missionId, @RequestParam String operatorToken) {
         return MissionsHolder.removeMission(missionId).get();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}")
-    public void completeMission(@PathVariable String missionId, @RequestBody MissionResult missionResult) throws IOException {
+    @RequestMapping(method = RequestMethod.POST, value = "/api/missions/{missionId}", params = "operatorToken")
+    public void completeMission(
+            @PathVariable String missionId,
+            @RequestBody MissionResult missionResult,
+            @RequestParam String operatorToken) throws IOException {
         log.info("Completing mission {} {}", missionId, missionResult);
         AtomicInteger counter = new AtomicInteger(0);
         missionResult.getImages().stream()
