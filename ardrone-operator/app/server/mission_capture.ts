@@ -62,6 +62,7 @@ export class MissionCapture {
     if (droneState && droneState.demo) {
       missionStateMapped.altitude = droneState.demo.altitude
       missionStateMapped.altitudeMeters = droneState.demo.altitudeMeters
+      missionStateMapped.battery = droneState.demo.batteryPercentage
     }
     this.navigationData.push(missionStateMapped)
   }

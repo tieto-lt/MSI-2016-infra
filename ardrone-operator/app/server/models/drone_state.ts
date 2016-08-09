@@ -14,6 +14,7 @@ export class MissionState {
   public z: number
   public altitude: number
   public altitudeMeters: number
+  public battery: number
 }
 
 export class NavData {
