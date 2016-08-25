@@ -16,6 +16,7 @@ class Keyboard {
   public static get PAGE_DOWN(): number { return 34 }
   public static get ESC(): number { return 27 }
   public static get ENTER(): number { return 13 }
+  public static get SPACEBAR(): number { return 32 }
 }
 
 class OperatorClient {
@@ -23,11 +24,12 @@ class OperatorClient {
   private ws: WebSocket;
   private keyDowned = false;
   private missions = [];
+  private selectedPredefinedMission: string;
 
   constructor() {
     $("#drone-connect").click(() => this.connectDrone())
     $("#control-connect").click(() => this.connectControl())
-    $("#drone-speed").val(0.1)
+    $("#drone-speed").val(0.9)
     $("#drone-disable-emergency").click(() => this.sendCommandForDrone("disableEmergency", null))
     $("#drone-calibrate").click(() => this.sendCommandForDrone("calibrate", null))
     $("#drone-take-picture").click(() => this.sendCommandForDrone("takePicture", null))
@@ -119,49 +121,69 @@ class OperatorClient {
     switch (e.which) {
       case Keyboard.PLUS:
         this.setCurrentSpeed(this.currentSpeed() + speedStep);
+        e.preventDefault();
         break;
       case Keyboard.MINUS:
         this.setCurrentSpeed(this.currentSpeed() - speedStep);
+        e.preventDefault();
         break;
       case Keyboard.UP:
         this.sendCommandForDrone("up", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.DOWN:
         this.sendCommandForDrone("down", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.RIGHT:
         this.sendCommandForDrone("clockwise", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.LEFT:
         this.sendCommandForDrone("counterClockwise", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.W_KEY:
         this.sendCommandForDrone("front", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.S_KEY:
         this.sendCommandForDrone("back", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.A_KEY:
         this.sendCommandForDrone("left", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.D_KEY:
         this.sendCommandForDrone("right", this.currentSpeed());
+        e.preventDefault();
         break;
       case Keyboard.ENTER:
         this.sendCommandForDrone("takeoff", undefined)
+        e.preventDefault();
         break;
       case Keyboard.ESC:
         this.sendCommandForDrone("land", undefined)
+        e.preventDefault();
         break;
       case Keyboard.PAGE_UP:
         this.sendCommandForDrone("horizontalCamera", undefined)
+        e.preventDefault();
         break;
       case Keyboard.PAGE_DOWN:
         this.sendCommandForDrone("verticalCamera", undefined)
+        e.preventDefault();
+        break;
+      case Keyboard.SPACEBAR:
+        this.runDroneMission(
+          this.getPredefinedMission(this.selectedPredefinedMission),
+          this.selectedPredefinedMission,
+          false)
+        e.preventDefault();
         break;
     }
-    e.preventDefault();
-    return false;
+    return true;
   }
 
   setCurrentSpeed(speed: number) {
@@ -200,12 +222,25 @@ class OperatorClient {
   runMission(missionIndex) {
     let mission = this.missions[missionIndex]
     let missionId = mission.missionId;
+    this.runDroneMission(mission, missionId, true);
+  }
+
+  selectMission(missionId) {
+    $('#selectedMission').text(missionId);
+    this.selectedPredefinedMission = missionId;
+  }
+
+  private runDroneMission(mission, title: string, withReservation: boolean) {
+    let msg = "Mission submitted";
+    if (title) {
+      msg = title + " mission submitted";
+    }
     $.ajax({
-       url: '/api/mission/',
+       url: `/api/mission?noReservation=${!withReservation}`,
        type: 'POST',
        data: JSON.stringify(mission),
        contentType: 'application/json',
-       success: () => this.showSuccess("Mission submitted"),
+       success: () => this.showSuccess(msg),
        error: (err, rest, body) => this.showError(err.responseText)
     });
   }
@@ -225,10 +260,122 @@ class OperatorClient {
   private isWsOpen(ws: WebSocket) {
     return ws && ws.readyState === WebSocket.OPEN;
   }
+
+  private getPredefinedMission(missionId) {
+    let predefinedMissions = {
+      "TEST_FLIGHT": {
+        "commands": [
+          {
+            "commandType" : "takeoff",
+            "args": []
+          },
+          {
+            "commandType" : "land",
+            "args": []
+          }
+        ]
+      },
+      "SQUARE_FLIGHT": {
+        "commands": [
+          {
+            "commandType" : "takeoff",
+            "args": []
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "land",
+            "args": []
+          }
+        ]
+      },
+      "DEATH_SQUARE_FLIGHT": {
+        "commands": [
+          {
+            "commandType" : "takeoff",
+            "args": []
+          },
+          {
+            "commandType" : "altitude",
+            "args": [3]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [2]
+          },
+          {
+            "commandType" : "clockwise",
+            "args": [90]
+          },
+          {
+            "commandType" : "land",
+            "args": []
+          }
+        ]
+      }
+    };
+
+    return predefinedMissions[missionId];
+  }
 }
 
 $(document).ready(
   () => {
     let operatorClient = new OperatorClient();
     window['runMission'] = operatorClient.runMission.bind(operatorClient);
+    window['client'] = operatorClient;
   });

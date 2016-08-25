@@ -108,27 +108,29 @@ export class Operator {
         if (err) {
           callback(err);
         } else {
-          this.runMission(missionPlan, callback);
+          this.runMission(missionPlan, withReservation, callback);
         }
       })
     } else {
-      this.runMission(missionPlan, callback);
+      this.runMission(missionPlan, withReservation, callback);
     }
   }
 
-  private runMission(missionPlan: MissionPlan, callback) {
+  private runMission(missionPlan: MissionPlan, withReservation, callback) {
     let missionCapture = new MissionCapture(missionPlan.missionId)
     let missionState = this.drone.runMission(
       missionPlan.commands,
       mstate => {
-        missionCapture.finish((err) => {
-          if (err) {
-            console.log(err)
-            this.updateOperatorState(state => state.setError(err))
-          } else {
-            this.updateOperatorState(ostate => ostate.missionState = mstate)
-          }
-        })
+        if (withReservation) {
+          missionCapture.finish((err) => {
+            if (err) {
+              console.log(err)
+              this.updateOperatorState(state => state.setError(err))
+            } else {
+              this.updateOperatorState(ostate => ostate.missionState = mstate)
+            }
+          })
+        }
       })
     this.updateOperatorState(state => state.missionState = missionState)
     callback(undefined, missionState);

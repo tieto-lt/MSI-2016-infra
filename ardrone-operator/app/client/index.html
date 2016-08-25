@@ -1,14 +1,16 @@
 <html>
-  <head>
-    <title>Tieto AR Drone Operator Application</title>
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
-    <style>
-      .centered {
-          float: none;
-          margin: 0 auto;
-      }
-    </style>
+
+<head>
+  <title>Tieto AR Drone Operator Application</title>
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+  <style>
+    .centered {
+      float: none;
+      margin: 0 auto;
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
     <div class="panel panel-default">
@@ -16,8 +18,21 @@
         <div id="ok-placeholder" class="alert alert-success" role="alert">Everything seems OK</div>
         <div id="error-placeholder" class="alert alert-danger" role="alert" style="display: none">Boom</div>
         <div class="row">
-          <div class="col-lg-7">
+          <div class="col-lg-11">
             <div class="btn-group">
+              <div class="btn-group">
+                <div class="dropdown">
+                  <button class="btn btn-default dropdown-toggle" type="button" id="selectedMission" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Select mission
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a onclick="client.selectMission('TEST_FLIGHT')">TEST_FLIGHT</a></li>
+                    <li><a onclick="client.selectMission('SQUARE_FLIGHT')">SQUARE_FLIGHT</a></li>
+                    <li><a onclick="client.selectMission('DEATH_SQUARE_FLIGHT')">DEATH_SQUARE_FLIGHT</a></li>
+                  </ul>
+                </div>
+              </div>
               <button id="drone-connect" type="button" class="btn btn-default">Drone Connect</button>
               <button id="control-connect" type="button" class="btn btn-default">Control Connect</button>
               <button id="drone-disable-emergency" type="button" class="btn btn-default">Disable emergency</button>
@@ -36,13 +51,13 @@
         <div class="row col-lg-12">
           <table class="table table-striped table-bordered">
             <thead>
-                <tr>
-                  <td>ID</td>
-                  <td>Sybmitted by</td>
-                  <td>State</td>
-                  <td>Commands count</td>
-                  <td>Action</td>
-                </tr>
+              <tr>
+                <td>ID</td>
+                <td>Sybmitted by</td>
+                <td>State</td>
+                <td>Commands count</td>
+                <td>Action</td>
+              </tr>
             </thead>
             <tbody id="missions-table-rows">
             </tbody>
@@ -73,10 +88,13 @@
   <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
   <script src="client.js"></script>
   <script>
-     // video canvas will auto-size to the DOM-node, or default to 640*360 if no size is set.
-     new NodecopterStream(document.getElementById("droneStream"), { path: '/ws/video'});
+    // video canvas will auto-size to the DOM-node, or default to 640*360 if no size is set.
+    new NodecopterStream(document.getElementById("droneStream"), {
+      path: '/ws/video'
+    });
   </script>
 
 
 </body>
+
 </html>
