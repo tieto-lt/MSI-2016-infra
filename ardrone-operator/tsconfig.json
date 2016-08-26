@@ -21,7 +21,6 @@
   },
   "files": [
     "app/client/client.ts",
-    "app/client/show.ts",
     "app/config.ts",
     "app/custom_typings/ar_drone/index.d.ts",
     "app/index.ts",

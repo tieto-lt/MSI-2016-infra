@@ -262,6 +262,8 @@ class OperatorClient {
   }
 
   private getPredefinedMission(missionId) {
+    console.log(missionId);
+    let meters = 1;
     let predefinedMissions = {
       "TEST_FLIGHT": {
         "commands": [
@@ -270,100 +272,154 @@ class OperatorClient {
             "args": []
           },
           {
-            "commandType" : "land",
-            "args": []
-          }
-        ]
-      },
-      "SQUARE_FLIGHT": {
-        "commands": [
-          {
-            "commandType" : "takeoff",
-            "args": []
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "land",
-            "args": []
-          }
-        ]
-      },
-      "DEATH_SQUARE_FLIGHT": {
-        "commands": [
-          {
-            "commandType" : "takeoff",
-            "args": []
-          },
-          {
             "commandType" : "altitude",
-            "args": [3]
+            "args": [meters]
           },
           {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
-          },
-          {
-            "commandType" : "forward",
-            "args": [2]
-          },
-          {
-            "commandType" : "clockwise",
-            "args": [90]
+            "commandType" : "hover",
+            "args": [5000]
           },
           {
             "commandType" : "land",
             "args": []
+          }
+        ]
+      },
+      "SQUARE_LEFT": {
+        "commands": [
+          {
+            "commandType" : "takeoff",
+            "args": []
+          },
+          {
+            "commandType" : "zero",
+            "args": []
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [90]
+          },
+          //First rechtangle passed
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "ccw",
+            "args": [180]
+          }
+        ]
+      },
+      "SQUARE_RIGHT": {
+        "commands": [
+          {
+            "commandType" : "takeoff",
+            "args": []
+          },
+          {
+            "commandType" : "zero",
+            "args": []
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [90]
+          },
+          //First rechtangle passed
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [90]
+          },
+          {
+            "commandType" : "forward",
+            "args": [meters]
+          },
+          {
+            "commandType" : "cw",
+            "args": [180]
           }
         ]
       }

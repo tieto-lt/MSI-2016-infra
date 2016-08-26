@@ -67,8 +67,8 @@ export class MissionsExecutor {
       } else if (c.commandType === "switchVerticalCamera") {
         mission.taskSync(() => this.client.config('video:video_channel', 1));
       } else if (c.commandType === "deadlyFlip") {
-        mission.taskSync(() => this.client.animate('flipLeft', 1000));
-        mission.wait(3000);
+        mission.taskSync(() => this.client.animate('flipLeft', 15));
+        mission.wait(2000);
       } else {
         let cmdFn = mission[c.commandType]
         if (cmdFn) {
